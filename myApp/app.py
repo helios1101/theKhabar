@@ -8,24 +8,20 @@ from flask import render_template
 from flask import request
 from data import Articles
 from flask_mysqldb import MySQL
+import MySQLdb
+import MySQLdb.cursors 
 from wtforms import Form,StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
-from model import *
+from models import *
+from models import db as pdb
+from flask_sqlalchemy import SQLAlchemy
 
 
 app=Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']='mysql://root:#Neel1998@localhost/myapp'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
-db=SQLAlchemy(app)
 
-app.config['MYSQL_HOST']='localhost'
-app.config['MYSQL_USER']='root'
-app.config['MYSQL_PASSWORD']='#Neel1998'
-app.config['MYSQL_DB']='myapp'
-app.config['MYSQL_CURSORCLASS']='DictCursor'
-
-mysql=MySQL(app)
-
+#mysql = MySQLdb.connect(host = "localhost",user = "root",passwd = "#Neel1998",db="myapp",cursorclass=MySQLdb.cursors.DictCursor)
+news = MySQLdb.connect(host = "localhost",user = "root",passwd = "aarush123@",db="NEWS")
+newsCursor = news.cursor(cursorclass=MySQLdb.cursors.DictCursor)
 un=""
 pref=[]
 
@@ -128,6 +124,20 @@ def change_user():
 		   	flash("PASSWORD DOENT MATCH!!")
 		   	return render_template('change_user.html',name=un)
 	return render_template('change_user.html',name=un)
+@app.route('/sports')
+def sportPage():
+	setSports = set()
+	listSports = []
+	instSports = """select * from Sports where date = '2018-04-08' """
+	newsCursor.execute(instSports)
+	sports = newsCursor.fetchall()
+	for title in sports:
+		if title['title'] in setSports:
+			pass 
+		else:
+			setSports.add(title['title'])
+			listSports.append(title)
+	return render_template('sports.html',sports = listSports)
 if __name__=='__main__':
 	app.secret_key=("secretkey")
 	app.debug=True
