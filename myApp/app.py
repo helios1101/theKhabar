@@ -7,21 +7,21 @@ from flask import logging
 from flask import render_template
 from flask import request
 from data import Articles
-from flask_mysqldb import MySQL
+#from flask_mysqldb import MySQL
 from wtforms import Form,StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 
 
 app=Flask(__name__)
-
+'''
 app.config['MYSQL_HOST']='localhost'
 app.config['MYSQL_USER']='root'
-app.config['MYSQL_PASSWORD']='#Neel1998'
+app.config['MYSQL_PASSWORD']='aarush123@'
 app.config['MYSQL_DB']='myapp'
 app.config['MYSQL_CURSORCLASS']='DictCursor'
 
 mysql=MySQL(app)
-
+'''
 Articles=Articles();
 
 un=""
@@ -134,6 +134,13 @@ def change_user():
 			flash("PASSWORD DOENT MATCH!!")
 			return render_template('change_user.html',name=un)
 	return render_template('change_user.html',name=un)
+'''@app.route('/sports')
+	return render_template('sports.html')
+'''
+
+
+
+
 if __name__=='__main__':
 	app.secret_key=("secretkey")
 	app.debug=True
