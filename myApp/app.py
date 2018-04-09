@@ -24,6 +24,8 @@ news = MySQLdb.connect(host = "localhost",user = "root",passwd = "aarush123@",db
 newsCursor = news.cursor(cursorclass=MySQLdb.cursors.DictCursor)
 un=""
 pref=[]
+complete=[]
+total=[]
 
 @app.route('/')
 def index():
@@ -138,6 +140,99 @@ def sportPage():
 			setSports.add(title['title'])
 			listSports.append(title)
 	return render_template('sports.html',sports = listSports)
+
+@app.route('/general')
+def generalPage():
+	setGeneral = set()
+	listGeneral = []
+	instGeneral = """select * from General where date = '2018-04-08' """
+	newsCursor.execute(instGeneral)
+	general = newsCursor.fetchall()
+	for title in general:
+		if title['title'] in setGeneral:
+			pass 
+		else:
+			setGeneral.add(title['title'])
+			listGeneral.append(title)
+	return render_template('general.html',general = listGeneral)
+
+@app.route('/entertainment')
+def entertainmentPage():
+	setEntertainment = set()
+	listEntertainment = []
+	instEntertainment = """select * from Entertainment where date = '2018-04-08' """
+	newsCursor.execute(instEntertainment)
+	entertainment = newsCursor.fetchall()
+	for title in entertainment:
+		if title['title'] in setEntertainment:
+			pass 
+		else:
+			setEntertainment.add(title['title'])
+			listEntertainment.append(title)
+	return render_template('entertainment.html',entertainment = listEntertainment)
+
+@app.route('/technology')
+def technologyPage():
+	setTechnology = set()
+	listTechnology = []
+	instTechnology = """select * from Technology where date = '2018-04-08' """
+	newsCursor.execute(instTechnology)
+	technology = newsCursor.fetchall()
+	for title in technology:
+		if title['title'] in setTechnology:
+			pass 
+		else:
+			setTechnology.add(title['title'])
+			listTechnology.append(title)
+	return render_template('technology.html',technology = listTechnology)
+
+@app.route('/science')
+def sciencePage():
+	setScience = set()
+	listScience = []
+	instScience = """select * from Science """
+	newsCursor.execute(instScience)
+	science = newsCursor.fetchall()
+	for title in science:
+		if title['title'] in setScience:
+			pass 
+		else:
+			setScience.add(title['title'])
+			listScience.append(title)
+	return render_template('science.html' , science = listScience)
+
+@app.route('/search',methods = ['GET','POST'])
+def search():
+	if request.method == 'POST':
+		keyword = request.form['keyword']
+		tables = ['General','Sports','Entertainment','Technology','Science']
+		global total
+		total.clear()
+		
+		for category in tables:
+			inst = """ select * from """ + category + """ where keyword = """ + keyword
+			newsCursor.execute(inst)
+			global complete
+			complete = newsCursor.fetchall()
+			
+			for khabar in complete:
+				if khabar[title] in totalSet:
+					pass
+				else:
+					
+					totalSet.add(khabar[title])
+					global total
+					total.append(khabar)
+
+		
+		
+		
+	return render_template('search.html',complete = total) 
+
+
+
+
+
 if __name__=='__main__':
 	app.secret_key=("secretkey")
 	app.debug=True
