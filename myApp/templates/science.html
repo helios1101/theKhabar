@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+{% block body %}
+	{% for news in science %}
+	<div class="row" display = "inline-block">
+    <div class="col s12 m7 l3">
+      <div class="card">
+        <div class="card-image">
+          <img src="{{news['image']}}" >
+          <span class="card-title">{{news['title']}}</span>
+        </div>
+        <div class="card-content">
+          <p>
+          	{{news['summary']}}
+          </p>
+        </div>
+        <div class="card-action">
+          <a href="#">This is a link</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+{% endblock %}

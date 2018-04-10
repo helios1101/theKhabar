@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+{% block body %}
+	<h1>SEARCH</h1>
+	<form method='POST' action="">
+		<div class="form-group">
+			<label>KEYWORD</label>
+			<input type="text" name="KEYWORD" class="form-control" value="{{request.form.keyword}}">
+		</div>
+		
+		<p><input type="submit" class="btn btn-primary" value="Submit"></p>
+	</form>
+{% endblock %}
