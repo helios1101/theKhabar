@@ -5,9 +5,15 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
 </head>
+<style type="text/css">
+body
+{
+	background: url("../static/map.jpg")
+}
+</style>
 <body >
 	{% include 'includes/_navbar.html' %}
-	<div class="container" >
+	<div class="container">
 		{% block body %}
 		{% endblock %}
 	</div>

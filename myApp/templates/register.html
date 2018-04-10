@@ -1,9 +1,10 @@
 {% extends 'layout.html' %}
 {% block body %}
+<div style="margin: 20px;background-color: white;padding: 20px; opacity: 0.7; color:black;">
 	<h1>REGISTER</h1>
 	{% from "includes/_formhelpers.html" import render_field%}
 	<form method='POST' action="">
-		<div class="form-group">
+		<div>
 			{{render_field(form.name,class_="form-control")}}
 		</div>
 		<div class="form-group">
@@ -53,4 +54,5 @@
     </p>
 		<p><input type="submit" class="btn btn-primary" value="Submit"></p>
 	</form>
+</div>
 {% endblock %}
