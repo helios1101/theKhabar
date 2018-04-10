@@ -16,8 +16,8 @@ top_headlines_sports =newsapi.get_top_headlines(
 										page_size = '100',
 										)
 
-top_headlines_buisness =newsapi.get_top_headlines(
-										category = 'buisness',
+top_headlines_business =newsapi.get_top_headlines(
+										category = 'business',
 										country = 'in',
 										page_size = '100',
 										)
@@ -60,7 +60,8 @@ for article in top_headlines_sports['articles']:
 		news.parse()
 		news.nlp()
 		for keyword in news.keywords:
-			khabar = Sports(article['title'],article['author'],article['publishedAt'][0:10],news.summary,article['urlToImage'],keyword)
+			khabar = Sports(article['title'],article['author'],article['publishedAt'][0:10],news.summary,article['url'],article['description'],article['urlToImage'],keyword)
+			
 			db.session.add(khabar)
 			db.session.commit()
 	except newspaper.article.ArticleException:
@@ -69,7 +70,7 @@ for article in top_headlines_sports['articles']:
 		pass
 		
 
-for article in top_headlines_buisness['articles']:
+for article in top_headlines_business['articles']:
 
 	news = ar(article['url'])
 	
@@ -80,7 +81,7 @@ for article in top_headlines_buisness['articles']:
 		news.nlp()
 		
 		for keyword in news.keywords:
-			khabar = Buisness(article['title'],article['author'],article['publishedAt'][0:10],news.summary,article['urlToImage'],keyword)
+			khabar = Business(article['title'],article['author'],article['publishedAt'][0:10],news.summary,article['url'],article['description'],article['urlToImage'],keyword)
 			db.session.add(khabar)
 			db.session.commit()
 	except newspaper.article.ArticleException:
@@ -99,7 +100,7 @@ for article in top_headlines_entertainment['articles']:
 		news.parse()
 		news.nlp()
 		for keyword in news.keywords:
-			khabar = Entertainment(article['title'],article['author'],article['publishedAt'][0:10],news.summary,article['urlToImage'],keyword)
+			khabar = Entertainment(article['title'],article['author'],article['publishedAt'][0:10],news.summary,article['url'],article['description'],article['urlToImage'],keyword)
 			db.session.add(khabar)
 			db.session.commit()	
 	except newspaper.article.ArticleException:
@@ -118,7 +119,7 @@ for article in top_headlines_science['articles']:
 		news.parse()
 		news.nlp()
 		for keyword in news.keywords:
-			khabar = Science(article['title'],article['author'],article['publishedAt'][0:10],news.summary,article['urlToImage'],keyword)
+			khabar = Science(article['title'],article['author'],article['publishedAt'][0:10],news.summary,article['url'],article['description'],article['urlToImage'],keyword)
 			db.session.add(khabar)
 			db.session.commit()	
 	except newspaper.article.ArticleException:
@@ -137,7 +138,7 @@ for article in top_headlines_general['articles']:
 		news.parse()
 		news.nlp()
 		for keyword in news.keywords:
-			khabar = General(article['title'],article['author'],article['publishedAt'][0:10],news.summary,article['urlToImage'],keyword)
+			khabar = General(article['title'],article['author'],article['publishedAt'][0:10],news.summary,article['url'],article['description'],article['urlToImage'],keyword)
 			db.session.add(khabar)
 			db.session.commit()	
 	except newspaper.article.ArticleException:
@@ -156,7 +157,7 @@ for article in top_headlines_technology['articles']:
 		news.parse()
 		news.nlp()
 		for keyword in news.keywords:
-			khabar = Technology(article['title'],article['author'],article['publishedAt'][0:10],news.summary,article['urlToImage'],keyword)
+			khabar = Technology(article['title'],article['author'],article['publishedAt'][0:10],news.summary,article['url'],article['description'],article['urlToImage'],keyword)
 			db.session.add(khabar)
 			db.session.commit()	
 	except newspaper.article.ArticleException:
@@ -174,7 +175,7 @@ for article in top_headlines_health['articles']:
 		news.parse()
 		news.nlp()
 		for keyword in news.keywords:
-			khabar = Health(article['title'],article['author'],article['publishedAt'][0:10],news.summary,article['urlToImage'],keyword)
+			khabar = Health(article['title'],article['author'],article['publishedAt'][0:10],news.summary,article['url'],article['description'],article['urlToImage'],keyword)
 			db.session.add(khabar)
 			db.session.commit()	
 	except newspaper.article.ArticleException:

@@ -13,15 +13,23 @@ import MySQLdb.cursors
 from wtforms import Form,StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from models import *
-from models import db as pdb
 from flask_sqlalchemy import SQLAlchemy
 
 
-app=Flask(__name__)
-
-#mysql = MySQLdb.connect(host = "localhost",user = "root",passwd = "#Neel1998",db="myapp",cursorclass=MySQLdb.cursors.DictCursor)
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:aarush123@@localhost/NEWS'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True 
+db = SQLAlchemy(app)
 news = MySQLdb.connect(host = "localhost",user = "root",passwd = "aarush123@",db="NEWS")
 newsCursor = news.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+app.config['MYSQL_HOST']='localhost'
+app.config['MYSQL_USER']='root'
+app.config['MYSQL_PASSWORD']='aarush123@'
+app.config['MYSQL_DB']='NEWS'
+app.config['MYSQL_CURSORCLASS']='DictCursor'
+
+mysql=MySQL(app)
+
 un=""
 pref=[]
 complete=[]
@@ -101,6 +109,7 @@ def change():
 			cur.execute("UPDATE userInfo SET password=%s WHERE username=%s",[new_p,un])
 			mysql.connection.commit()
 			cur.close()
+			#news.commit()
 			return render_template('user_home.html',name=un)
 		else:
 			flash("OLD PASSWORD DOENT MATCH!!")
@@ -121,6 +130,7 @@ def change_user():
 			un=ns
 			mysql.connection.commit()
 			cur.close()
+			#news.commit()
 			return render_template('user_home.html',name=un)
 		else:
 		   	flash("PASSWORD DOENT MATCH!!")
@@ -130,7 +140,7 @@ def change_user():
 def sportPage():
 	setSports = set()
 	listSports = []
-	instSports = """select * from Sports where date = '2018-04-08' """
+	instSports = """select * from Sports order by date DESC"""
 	newsCursor.execute(instSports)
 	sports = newsCursor.fetchall()
 	for title in sports:
@@ -145,7 +155,7 @@ def sportPage():
 def generalPage():
 	setGeneral = set()
 	listGeneral = []
-	instGeneral = """select * from General where date = '2018-04-08' """
+	instGeneral = """select * from General order by date DESC"""
 	newsCursor.execute(instGeneral)
 	general = newsCursor.fetchall()
 	for title in general:
@@ -160,7 +170,7 @@ def generalPage():
 def entertainmentPage():
 	setEntertainment = set()
 	listEntertainment = []
-	instEntertainment = """select * from Entertainment where date = '2018-04-08' """
+	instEntertainment = """select * from Entertainment order by date DESC """
 	newsCursor.execute(instEntertainment)
 	entertainment = newsCursor.fetchall()
 	for title in entertainment:
@@ -175,7 +185,7 @@ def entertainmentPage():
 def technologyPage():
 	setTechnology = set()
 	listTechnology = []
-	instTechnology = """select * from Technology where date = '2018-04-08' """
+	instTechnology = """select * from Technology order by date DESC """
 	newsCursor.execute(instTechnology)
 	technology = newsCursor.fetchall()
 	for title in technology:
@@ -201,37 +211,156 @@ def sciencePage():
 			listScience.append(title)
 	return render_template('science.html' , science = listScience)
 
+@app.route('/business')
+def businessPage():
+	setBusiness = set()
+	listBusiness = []
+	instBusiness = """select * from Business """
+	newsCursor.execute(instBusiness)
+	business = newsCursor.fetchall()
+	for title in business:
+		if title['title'] in setBusiness:
+			pass 
+		else:
+			setBusiness.add(title['title'])
+			listBusiness.append(title)
+	return render_template('business.html' , business = listBusiness)
+
+@app.route('/health')
+def healthPage():
+	setHealth = set()
+	listHealth = []
+	instHealth = """select * from Health """
+	newsCursor.execute(instHealth)
+	health = newsCursor.fetchall()
+	for title in health:
+		if title['title'] in setHealth:
+			pass 
+		else:
+			setHealth.add(title['title'])
+			listHealth.append(title)
+	return render_template('health.html' , health = listHealth)
+
+
+
+
 @app.route('/search',methods = ['GET','POST'])
 def search():
 	if request.method == 'POST':
-		keyword = request.form['keyword']
-		tables = ['General','Sports','Entertainment','Technology','Science']
-		global total
-		total.clear()
-		
-		for category in tables:
-			inst = """ select * from """ + category + """ where keyword = """ + keyword
-			newsCursor.execute(inst)
-			global complete
-			complete = newsCursor.fetchall()
+		keyword = request.form.get('keyword',None)
+		return result(keyword)
 			
-			for khabar in complete:
-				if khabar[title] in totalSet:
-					pass
-				else:
-					
-					totalSet.add(khabar[title])
-					global total
-					total.append(khabar)
+	return render_template('search.html') 
 
-		
-		
-		
-	return render_template('search.html',complete = total) 
+@app.route('/search/<keywords>')
+def result(keywords):
+	tables = ['General','Sports','Entertainment','Technology','Science']
+	totalSet = set()
+	total.clear()
+	totalSet.clear()
+	flag=0
+	temp=newsCursor.execute("""SELECT * FROM Sports WHERE keyword= %s """,[keywords])
+	complete = newsCursor.fetchall()
+	if temp <=0:
+		pass
+	else:	
+		flag=1
+		for khabar in complete:
+			if khabar['title'] in totalSet:
+				pass
+		else:
+			totalSet.add(khabar['title'])
+			global total
+			total.append(khabar)
+	
+	temp=newsCursor.execute("""SELECT * FROM General WHERE keyword= %s """,[keywords])
+	complete = newsCursor.fetchall()
+	if temp <=0:
+		pass
+	else:	
+		flag=1
+		for khabar in complete:
+			if khabar['title'] in totalSet:
+				pass
+		else:
+			totalSet.add(khabar['title'])
+			global total
+			total.append(khabar)
+	
+	temp=newsCursor.execute("""SELECT * FROM Entertainment WHERE keyword= %s """,[keywords])
+	complete = newsCursor.fetchall()
+	if temp <=0:
+		pass
+	else:	
+		flag=1
+		for khabar in complete:
+			if khabar['title'] in totalSet:
+				pass
+		else:
+			totalSet.add(khabar['title'])
+			global total
+			total.append(khabar)
+	
+	temp=newsCursor.execute("""SELECT * FROM Technology WHERE keyword= %s """,[keywords])
+	complete = newsCursor.fetchall()
+	if temp <=0:
+		pass
+	else:	
+		flag=1
+		for khabar in complete:
+			if khabar['title'] in totalSet:
+				pass
+		else:
+			totalSet.add(khabar['title'])
+			global total
+			total.append(khabar)
+	
+	temp=newsCursor.execute("""SELECT * FROM Science WHERE keyword= %s """,[keywords])
+	complete = newsCursor.fetchall()
+	if temp <=0:
+		pass
+	else:	
+		flag=1
+		for khabar in complete:
+			if khabar['title'] in totalSet:
+				pass
+		else:
+			totalSet.add(khabar['title'])
+			global total
+			total.append(khabar)
 
+	temp=newsCursor.execute("""SELECT * FROM Business WHERE keyword= %s """,[keywords])
+	complete = newsCursor.fetchall()
+	if temp <=0:
+		pass
+	else:	
+		flag=1
+		for khabar in complete:
+			if khabar['title'] in totalSet:
+				pass
+		else:
+			totalSet.add(khabar['title'])
+			global total
+			total.append(khabar)
 
-
-
+	temp=newsCursor.execute("""SELECT * FROM Health WHERE keyword= %s """,[keywords])
+	complete = newsCursor.fetchall()
+	if temp <=0:
+		pass
+	else:	
+		flag=1
+		for khabar in complete:
+			if khabar['title'] in totalSet:
+				pass
+		else:
+			totalSet.add(khabar['title'])
+			global total
+			total.append(khabar)
+	
+	if flag == 0:
+		flash('Sorry,No results found :(')
+		return redirect(url_for('search'))		
+	return render_template('results.html',results = total,keyword =keywords)			
 
 if __name__=='__main__':
 	app.secret_key=("secretkey")

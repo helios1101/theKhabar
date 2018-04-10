@@ -4,14 +4,11 @@ from newsapi import NewsApiClient as client
 import requests
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-#from app import *
+from app import *
 
 
-app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:aarush123@@localhost/NEWS'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True 
-db = SQLAlchemy(app)
+
 
 #db = SQLAlchemy()
 '''
@@ -22,7 +19,7 @@ DB2 = sessionmaker(db2)
 db1session = DB1()
 db2session = DB2()
 '''
-'''
+
 class user(db.Model):
 	__tablename__="userInfo"
 	uid= db.Column(db.Integer,primary_key=True)
@@ -35,7 +32,7 @@ class user(db.Model):
 		self.username=username
 		self.password=password
 		self.email=email
-'''
+
 
 class Comments(db.Model):
 
@@ -60,14 +57,18 @@ class News:
 	author = db.Column(db.Text)
 	date = db.Column(db.String(11))
 	summary = db.Column(db.Text)
+	url = db.Column(db.Text)
+	description = db.Column(db.Text)
 	image = db.Column(db.Text)
 	keyword = db.Column(db.String(30))
 
-	def __init__(self,title,author,date,summary,image,keyword):
+	def __init__(self,title,author,date,summary,url,description,image,keyword):
 		self.title = title
 		self.author = author
 		self.date = date
 		self.summary = summary
+		self.url = url
+		self.description =description
 		self.image = image
 		self.keyword = keyword
 
@@ -78,8 +79,8 @@ class Sports(News,db.Model):
 	__tablename__ = "Sports"
 	
 
-	def __init__(self,title,author,date,summary,image,keyword):
-		News.__init__(self,title,author,date,summary,image,keyword)
+	def __init__(self,title,author,date,summary,url,description,image,keyword):
+		News.__init__(self,title,author,date,summary,url,description,image,keyword)
 
 	__mapper_args__ = {
         'concrete': True
@@ -90,8 +91,8 @@ class General(News,db.Model):
 	__tablename__ = "General"
 	
 
-	def __init__(self,title,author,date,summary,image,keyword):
-		News.__init__(self,title,author,date,summary,image,keyword)
+	def __init__(self,title,author,date,summary,url,description,image,keyword):
+		News.__init__(self,title,author,date,summary,url,description,image,keyword)
 
 	__mapper_args__ = {
         'concrete': True
@@ -102,20 +103,20 @@ class Science(News,db.Model):
 	__tablename__ = "Science"
 	
 
-	def __init__(self,title,author,date,summary,image,keyword):
-		News.__init__(self,title,author,date,summary,image,keyword)
+	def __init__(self,title,author,date,summary,url,description,image,keyword):
+		News.__init__(self,title,author,date,summary,url,description,image,keyword)
 
 	__mapper_args__ = {
         'concrete': True
     }
 
-class Buisness(News,db.Model):
+class Business(News,db.Model):
 	
-	__tablename__ = "Buisness"
+	__tablename__ = "Business"
 	
 
-	def __init__(self,title,author,date,summary,image,keyword):
-		News.__init__(self,title,author,date,summary,image,keyword)
+	def __init__(self,title,author,date,summary,url,description,image,keyword):
+		News.__init__(self,title,author,date,summary,url,description,image,keyword)
 
 	__mapper_args__ = {
         'concrete': True
@@ -127,8 +128,8 @@ class Technology(News,db.Model):
 	__tablename__ = "Technology"
 	
 
-	def __init__(self,title,author,date,summary,image,keyword):
-		News.__init__(self,title,author,date,summary,image,keyword)
+	def __init__(self,title,author,date,summary,url,description,image,keyword):
+		News.__init__(self,title,author,date,summary,url,description,image,keyword)
 
 	__mapper_args__ = {
         'concrete': True
@@ -139,8 +140,8 @@ class Entertainment(News,db.Model):
 	__tablename__ = "Entertainment"
 	
 
-	def __init__(self,title,author,date,summary,image,keyword):
-		News.__init__(self,title,author,date,summary,image,keyword)
+	def __init__(self,title,author,date,summary,url,description,image,keyword):
+		News.__init__(self,title,author,date,summary,url,description,image,keyword)
 
 	__mapper_args__ = {
         'concrete': True
@@ -151,8 +152,8 @@ class Health(News,db.Model):
 	__tablename__ = "Health"
 	
 
-	def __init__(self,title,author,date,summary,image,keyword):
-		News.__init__(self,title,author,date,summary,image,keyword)
+	def __init__(self,title,author,date,summary,url,description,image,keyword):
+		News.__init__(self,title,author,date,summary,url,description,image,keyword)
 
 	__mapper_args__ = {
         'concrete': True
