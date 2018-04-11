@@ -5,7 +5,8 @@ from newspaper import Article as ar
 from flask_sqlalchemy import SQLAlchemy
 from models import db
 from models import *
-
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 
 import MySQLdb as my

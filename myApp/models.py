@@ -2,8 +2,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from newsapi import NewsApiClient as client  
 import requests
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from app import *
 
 
