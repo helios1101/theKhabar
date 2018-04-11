@@ -1,23 +1,29 @@
 {% extends 'layout.html' %}
 {% block body %}
-	{% for news in science %}
-	<div class="row" display = "inline-block">
-    <div class="col s12 m7 l3">
+  {% for news_row in science|batch(2) %}
+<div class="row">
+  {%for news in news_row%}
+  <div class="col s1">
+  <div class="row">
+    <div class="col s12 m7">
       <div class="card">
         <div class="card-image">
-          <img src="{{news['image']}}" >
+          <img src="{{news['image']}}">
           <span class="card-title">{{news['title']}}</span>
         </div>
         <div class="card-content">
           <p>
-          	{{news['summary']}}
+            {{news['summary']}}
           </p>
         </div>
         <div class="card-action">
-          <a href="#">This is a link</a>
+          <a href="{{news['url']}}">This is a link</a>
         </div>
       </div>
     </div>
   </div>
+</div>
+{%endfor%}
+</div>
 {% endfor %}
 {% endblock %}

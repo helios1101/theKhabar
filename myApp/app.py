@@ -15,16 +15,17 @@ from passlib.hash import sha256_crypt
 from models import *
 from flask_sqlalchemy import SQLAlchemy
 
+loggedin=False
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:aarush123@@localhost/NEWS'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:#Neel1998@localhost/NEWS'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True 
 db = SQLAlchemy(app)
-news = MySQLdb.connect(host = "localhost",user = "root",passwd = "aarush123@",db="NEWS")
+news = MySQLdb.connect(host = "localhost",user = "root",passwd = "#Neel1998",db="NEWS")
 newsCursor = news.cursor(cursorclass=MySQLdb.cursors.DictCursor)
 app.config['MYSQL_HOST']='localhost'
 app.config['MYSQL_USER']='root'
-app.config['MYSQL_PASSWORD']='aarush123@'
+app.config['MYSQL_PASSWORD']='#Neel1998'
 app.config['MYSQL_DB']='NEWS'
 app.config['MYSQL_CURSORCLASS']='DictCursor'
 
@@ -37,7 +38,22 @@ total=[]
 
 @app.route('/')
 def index():
-	return render_template('home.html')
+	setGeneral = set()
+	listGeneral = []
+	instGeneral = """select * from General order by date DESC"""
+	newsCursor.execute(instGeneral)
+	general = newsCursor.fetchall()
+	x=0
+	for title in general:
+		if title['title'] in setGeneral:
+			pass 
+		else:
+			setGeneral.add(title['title'])
+			if x<5:
+				listGeneral.append(title)
+				x+=1
+	#print(loggedin)
+	return render_template('home.html',homenews=listGeneral)
 @app.route('/about')
 def about():
 	return render_template('about.html')
@@ -82,6 +98,9 @@ def login():
 				if sha256_crypt.verify(password_candidate,password):
 					global un
 					un=usern1
+					global loggedin
+					loggedin=True
+					#print (loggedin)
 					return render_template('user_home.html',name=usern1)
 				else:
 					flash("AUTHENTICATION FAILED")
@@ -93,6 +112,9 @@ def login():
 @app.route('/logout')
 def logout():
 	session.clear()
+	global loggedin
+	loggedin=False
+	#print(loggedin)
 	return render_template('logout.html')
 @app.route('/user_home')
 def user_home():
@@ -138,6 +160,7 @@ def change_user():
 	return render_template('change_user.html',name=un)
 @app.route('/sports')
 def sportPage():
+	#print(loggedin)
 	setSports = set()
 	listSports = []
 	instSports = """select * from Sports order by date DESC"""
@@ -149,7 +172,10 @@ def sportPage():
 		else:
 			setSports.add(title['title'])
 			listSports.append(title)
-	return render_template('sports.html',sports = listSports)
+	if loggedin==False:
+		return render_template('sports.html',sports = listSports)
+	else:
+		return render_template('sports_user.html',sports = listSports,name=un)
 
 @app.route('/general')
 def generalPage():
@@ -164,7 +190,10 @@ def generalPage():
 		else:
 			setGeneral.add(title['title'])
 			listGeneral.append(title)
-	return render_template('general.html',general = listGeneral)
+	if loggedin==False:
+		return render_template('general.html',general = listGeneral)
+	else:
+		return render_template('general_user.html',general = listGeneral,name=un)
 
 @app.route('/entertainment')
 def entertainmentPage():
@@ -179,7 +208,10 @@ def entertainmentPage():
 		else:
 			setEntertainment.add(title['title'])
 			listEntertainment.append(title)
-	return render_template('entertainment.html',entertainment = listEntertainment)
+	if loggedin==False:
+		return render_template('entertainment.html',entertainment= listEntertainment)
+	else:
+		return render_template('entertainment_user.html',entertainment = listEntertainment,name=un)
 
 @app.route('/technology')
 def technologyPage():
@@ -194,7 +226,10 @@ def technologyPage():
 		else:
 			setTechnology.add(title['title'])
 			listTechnology.append(title)
-	return render_template('technology.html',technology = listTechnology)
+	if loggedin==False:
+		return render_template('technology.html',technology = listTechnology)
+	else:
+		return render_template('technology_user.html',technology = listTechnology,name=un)
 
 @app.route('/science')
 def sciencePage():
@@ -209,7 +244,10 @@ def sciencePage():
 		else:
 			setScience.add(title['title'])
 			listScience.append(title)
-	return render_template('science.html' , science = listScience)
+	if loggedin==False:
+		return render_template('science.html',science = listScience)
+	else:
+		return render_template('science_user.html',science = listScience,name=un)
 
 @app.route('/business')
 def businessPage():
@@ -224,7 +262,10 @@ def businessPage():
 		else:
 			setBusiness.add(title['title'])
 			listBusiness.append(title)
-	return render_template('business.html' , business = listBusiness)
+	if loggedin==False:
+		return render_template('business.html',business = listBusiness)
+	else:
+		return render_template('business_user.html',business = listBusiness,name=un)
 
 @app.route('/health')
 def healthPage():
@@ -239,7 +280,10 @@ def healthPage():
 		else:
 			setHealth.add(title['title'])
 			listHealth.append(title)
-	return render_template('health.html' , health = listHealth)
+	if loggedin==False:
+		return render_template('health.html',health = listHealth)
+	else:
+		return render_template('health_user.html',health= listHealth,name=un)
 
 
 
@@ -249,8 +293,10 @@ def search():
 	if request.method == 'POST':
 		keyword = request.form.get('keyword',None)
 		return result(keyword)
-			
-	return render_template('search.html') 
+	if loggedin==False:
+		return render_template('search.html')
+	else:
+		return render_template('search_user.html',name=un)		
 
 @app.route('/search/<keywords>')
 def result(keywords):
@@ -359,8 +405,11 @@ def result(keywords):
 	
 	if flag == 0:
 		flash('Sorry,No results found :(')
-		return redirect(url_for('search'))		
-	return render_template('results.html',results = total,keyword =keywords)			
+		return redirect(url_for('search'))
+	if loggedin==False:
+		return render_template('results.html',results=total,keyword=keywords)
+	else:
+		return render_template('result_user.html',results = total,keyword =keywords,name=un)			
 
 if __name__=='__main__':
 	app.secret_key=("secretkey")
