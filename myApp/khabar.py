@@ -11,7 +11,7 @@ from sqlalchemy.orm import sessionmaker
 
 import MySQLdb as my
 newsapi = client(api_key='b17240dd888f4069aa4cf3737c3df802')
-top_headlines_sports =newsapi.get_top_headlines(
+top_headlines_sports = newsapi.get_top_headlines(
 										category = 'sports',
 										country = 'in',
 										page_size = '100',
