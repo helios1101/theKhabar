@@ -34,11 +34,46 @@
               {% endfor %}
               </b>
             </p>
-            {{news['summary']}}
+            {{news['description']}}
           </div>
         <div class="card-action">
-          <a href="{{news['url']}}">This is a link</a>
-        </div>
+            <a href="{{news['url']}}">Go To Site</a>
+            <button data-target="modal{{entertainment.index(news)}}" class="btn modal-trigger">Read more</button>
+            <div id="modal{{entertainment.index(news)}}" class="modal modal-fixed-footer">
+              <div class="modal-content">
+                <h4>{{news['title']}}</h4>
+                <p>{{news['summary']}}</p>
+                <form method = 'POST' action="">
+                  <input type = "text" name = "username" value = "{{un}}" style="display: none">
+                  <input type = "text" name = "title" value = "{{news['title']}}" style="display: none">
+                  <label style="color: black; font-size: 15px;">Comment</label>
+                  <input type="text" name="comment" >
+                  <button class="btn-floating waves-effect waves-light blue" type="submit" name="Comments" >
+                    <i class="material-icons">create</i>
+                  </button>         
+                </form>
+                <ul class="collection">
+                  {% for i in views %}
+                  {%- if news['title'] in i.values() %}
+
+                  <li class="collection-item avatar">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMvm6UclGzn245GcuvQ20eJaY5nugtX7HosGOB43IqogmB_ohz" alt="" class="circle responsive-img" >
+                    <span class="title"><b><i>POSTED_BY</i></b>{{i['user']}}</span>
+                    <p>{{i['comments']}} <br>
+                   </p>
+                   <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+                 </li>
+                 {% endif %}
+                 {% endfor %}
+                 </ul>
+
+
+               </div>
+               <div class="modal-footer">
+
+               </div>
+             </div>
+           </div>
       </div>
     </div>
   </div>

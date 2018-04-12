@@ -152,7 +152,6 @@ def change_user():
 			un=ns
 			mysql.connection.commit()
 			cur.close()
-			#news.commit()
 			return render_template('user_home.html',name=un)
 		else:
 		   	flash("PASSWORD DOENT MATCH!!")
@@ -160,7 +159,6 @@ def change_user():
 	return render_template('change_user.html',name=un)
 @app.route('/sports',methods=['GET','POST'])
 def sportPage():
-	#print(loggedin)
 	setSports = set()
 	listSports = []
 	instSports = """select * from Sports order by date DESC"""
@@ -172,34 +170,51 @@ def sportPage():
 		else:
 			setSports.add(title['title'])
 			listSports.append(title)
+	cur=mysql.connection.cursor()
+	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+	views = cur.fetchall()
+	cur.close()
 	if loggedin==False:
-		return render_template('sports.html',sports = listSports)
+		return render_template('sports.html',sports = listSports,views=views)
 	
 	else:
 		if request.method == 'POST':
-			title = request.form['title']
-			cur=mysql.connection.cursor()
-			temp=cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
-			if temp<=0:
-				new = Comments(title,1)
+			if 'Like' in request.form:
+				title = request.form['title']
+				cur=mysql.connection.cursor()
+				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
+				if temp<=0:
+					new = Likes(title,1)
+					db.session.add(new)
+					db.session.commit()
+				else:
+					cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
+					likes=cur.fetchone()['likes']
+					likes=int(likes)
+					print (likes)
+					likes+=1
+					print (likes)
+					likes=str(likes)
+					cur.execute("""UPDATE Likes SET likes = %s WHERE news = %s""",[likes,title])
+					mysql.connection.commit()
+					cur.close()
+			if 'Comments' in request.form:
+				username = un
+				title = request.form['title']
+				comments = request.form['comment']
+				new = Views(title,username,comments)
 				db.session.add(new)
 				db.session.commit()
-			else:
-				cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
-				likes=cur.fetchone()['likes']
-				likes=int(likes)
-				print (likes)
-				likes+=1
-				print (likes)
-				likes=str(likes)
-				cur.execute("""UPDATE Comments SET likes = %s WHERE news = %s""",[likes,title])
-				mysql.connection.commit()
-				cur.close()
+
 		cur=mysql.connection.cursor()
-		temp=cur.execute("""SELECT news,likes FROM Comments""")
+		temp=cur.execute("""SELECT news,likes FROM Likes""")
 		likes = cur.fetchall()
 		cur.close()
-		return render_template('sports_user.html',sports = listSports,name=un,likes=likes)
+		cur=mysql.connection.cursor()
+		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+		views = cur.fetchall()
+		cur.close()
+		return render_template('sports_user.html',sports = listSports,name=un,likes=likes,views=views)
 	
 @app.route('/general',methods=['GET','POST'])
 def generalPage():
@@ -214,33 +229,48 @@ def generalPage():
 		else:
 			setGeneral.add(title['title'])
 			listGeneral.append(title)
+	cur=mysql.connection.cursor()
+	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+	views = cur.fetchall()
+	cur.close()
 	if loggedin==False:
-		return render_template('general.html',general = listGeneral)
+		return render_template('general.html',general = listGeneral,views=views)
 	else:
 		if request.method == 'POST':
 			title = request.form['title']
 			cur=mysql.connection.cursor()
-			temp=cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
+			temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
 			if temp<=0:
-				new = Comments(title,1)
+				new = Likes(title,1)
 				db.session.add(new)
 				db.session.commit()
 			else:
-				cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
+				cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
 				likes=cur.fetchone()['likes']
 				likes=int(likes)
 				print (likes)
 				likes+=1
 				print (likes)
 				likes=str(likes)
-				cur.execute("""UPDATE Comments SET likes = %s WHERE news = %s""",[likes,title])
+				cur.execute("""UPDATE Likes SET likes = %s WHERE news = %s""",[likes,title])
 				mysql.connection.commit()
 				cur.close()
+		if 'Comments' in request.form:
+				username = un
+				title = request.form['title']
+				comments = request.form['comment']
+				new = Views(title,username,comments)
+				db.session.add(new)
+				db.session.commit()
 		cur=mysql.connection.cursor()
-		temp=cur.execute("""SELECT news,likes FROM Comments""")
+		temp=cur.execute("""SELECT news,likes FROM Likes""")
 		likes = cur.fetchall()
 		cur.close()
-		return render_template('general_user.html',general = listGeneral,name=un,likes=likes)
+		cur=mysql.connection.cursor()
+		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+		views = cur.fetchall()
+		cur.close()
+		return render_template('general_user.html',general = listGeneral,name=un,likes=likes,views=views)
 
 @app.route('/entertainment',methods=['GET','POST'])
 def entertainmentPage():
@@ -255,33 +285,50 @@ def entertainmentPage():
 		else:
 			setEntertainment.add(title['title'])
 			listEntertainment.append(title)
+	cur=mysql.connection.cursor()
+	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+	views = cur.fetchall()
+	cur.close()
 	if loggedin==False:
-		return render_template('entertainment.html',entertainment= listEntertainment)
+		return render_template('entertainment.html',entertainment= listEntertainment,views=views)
 	else:
 		if request.method == 'POST':
 			title = request.form['title']
 			cur=mysql.connection.cursor()
-			temp=cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
+			temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
 			if temp<=0:
-				new = Comments(title,1)
+				new = Likes(title,1)
 				db.session.add(new)
 				db.session.commit()
 			else:
-				cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
+				cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
 				likes=cur.fetchone()['likes']
 				likes=int(likes)
 				print (likes)
 				likes+=1
 				print (likes)
 				likes=str(likes)
-				cur.execute("""UPDATE Comments SET likes = %s WHERE news = %s""",[likes,title])
+				cur.execute("""UPDATE Likes SET likes = %s WHERE news = %s""",[likes,title])
 				mysql.connection.commit()
 				cur.close()
+
+		if 'Comments' in request.form:
+				username = un
+				title = request.form['title']
+				comments = request.form['comment']
+				new = Views(title,username,comments)
+				db.session.add(new)
+				db.session.commit()
+
 		cur=mysql.connection.cursor()
-		temp=cur.execute("""SELECT news,likes FROM Comments""")
+		temp=cur.execute("""SELECT news,likes FROM Likes""")
 		likes = cur.fetchall()
 		cur.close()
-		return render_template('entertainment_user.html',entertainment = listEntertainment,name=un,likes=likes)
+		cur=mysql.connection.cursor()
+		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+		views = cur.fetchall()
+		cur.close()
+		return render_template('entertainment_user.html',entertainment = listEntertainment,name=un,likes=likes,views=views)
 
 @app.route('/technology',methods=['GET','POST'])
 def technologyPage():
@@ -296,33 +343,50 @@ def technologyPage():
 		else:
 			setTechnology.add(title['title'])
 			listTechnology.append(title)
+	cur=mysql.connection.cursor()
+	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+	views = cur.fetchall()
+	cur.close()
 	if loggedin==False:
-		return render_template('technology.html',technology = listTechnology)
+		return render_template('technology.html',technology = listTechnology,views=views)
 	else:
 		if request.method == 'POST':
 			title = request.form['title']
 			cur=mysql.connection.cursor()
-			temp=cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
+			temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
 			if temp<=0:
-				new = Comments(title,1)
+				new = Likes(title,1)
 				db.session.add(new)
 				db.session.commit()
 			else:
-				cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
+				cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
 				likes=cur.fetchone()['likes']
 				likes=int(likes)
 				print (likes)
 				likes+=1
 				print (likes)
 				likes=str(likes)
-				cur.execute("""UPDATE Comments SET likes = %s WHERE news = %s""",[likes,title])
+				cur.execute("""UPDATE Likes SET likes = %s WHERE news = %s""",[likes,title])
 				mysql.connection.commit()
 				cur.close()
+
+		if 'Comments' in request.form:
+				username = un
+				title = request.form['title']
+				comments = request.form['comment']
+				new = Views(title,username,comments)
+				db.session.add(new)
+				db.session.commit()
+
 		cur=mysql.connection.cursor()
-		temp=cur.execute("""SELECT news,likes FROM Comments""")
+		temp=cur.execute("""SELECT news,likes FROM Likes""")
 		likes = cur.fetchall()
 		cur.close()
-		return render_template('technology_user.html',technology = listTechnology,name=un,likes=likes)
+		cur=mysql.connection.cursor()
+		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+		views = cur.fetchall()
+		cur.close()
+		return render_template('technology_user.html',technology = listTechnology,name=un,likes=likes,views=views)
 
 @app.route('/science',methods=['GET','POST'])
 def sciencePage():
@@ -337,33 +401,48 @@ def sciencePage():
 		else:
 			setScience.add(title['title'])
 			listScience.append(title)
+	cur=mysql.connection.cursor()
+	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+	views = cur.fetchall()
+	cur.close()
 	if loggedin==False:
-		return render_template('science.html',science = listScience)
+		return render_template('science.html',science = listScience,views=views)
 	else:
 		if request.method == 'POST':
 			title = request.form['title']
 			cur=mysql.connection.cursor()
-			temp=cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
+			temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
 			if temp<=0:
-				new = Comments(title,1)
+				new = Likes(title,1)
 				db.session.add(new)
 				db.session.commit()
 			else:
-				cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
+				cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
 				likes=cur.fetchone()['likes']
 				likes=int(likes)
 				print (likes)
 				likes+=1
 				print (likes)
 				likes=str(likes)
-				cur.execute("""UPDATE Comments SET likes = %s WHERE news = %s""",[likes,title])
+				cur.execute("""UPDATE Likes SET likes = %s WHERE news = %s""",[likes,title])
 				mysql.connection.commit()
 				cur.close()
+		if 'Comments' in request.form:
+				username = un
+				title = request.form['title']
+				comments = request.form['comment']
+				new = Views(title,username,comments)
+				db.session.add(new)
+				db.session.commit()
 		cur=mysql.connection.cursor()
-		temp=cur.execute("""SELECT news,likes FROM Comments""")
+		temp=cur.execute("""SELECT news,likes FROM Likes""")
 		likes = cur.fetchall()
 		cur.close()
-		return render_template('science_user.html',science = listScience,name=un,likes=likes)
+		cur=mysql.connection.cursor()
+		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+		views = cur.fetchall()
+		cur.close()
+		return render_template('science_user.html',science = listScience,name=un,likes=likes,views=views)
 
 @app.route('/business',methods=['GET','POST'])
 def businessPage():
@@ -378,35 +457,51 @@ def businessPage():
 		else:
 			setBusiness.add(title['title'])
 			listBusiness.append(title)
+	cur=mysql.connection.cursor()
+	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+	views = cur.fetchall()
+	cur.close()
 	if loggedin==False:
-		return render_template('business.html',business = listBusiness)
+		return render_template('business.html',business = listBusiness,views=views)
 	else:
 		if request.method == 'POST':
 			title = request.form['title']
 			cur=mysql.connection.cursor()
-			temp=cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
+			temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
 			if temp<=0:
-				new = Comments(title,1)
+				new = Likes(title,1)
 				db.session.add(new)
 				db.session.commit()
 			else:
-				cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
+				cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
 				likes=cur.fetchone()['likes']
 				likes=int(likes)
 				print (likes)
 				likes+=1
 				print (likes)
 				likes=str(likes)
-				cur.execute("""UPDATE Comments SET likes = %s WHERE news = %s""",[likes,title])
+				cur.execute("""UPDATE Likes SET likes = %s WHERE news = %s""",[likes,title])
 				mysql.connection.commit()
 				cur.close()
+
+		if 'Comments' in request.form:
+				username = un
+				title = request.form['title']
+				comments = request.form['comment']
+				new = Views(title,username,comments)
+				db.session.add(new)
+				db.session.commit()
 		cur=mysql.connection.cursor()
-		temp=cur.execute("""SELECT news,likes FROM Comments""")
+		temp=cur.execute("""SELECT news,likes FROM Likes""")
 		likes = cur.fetchall()
 		cur.close()
-		return render_template('business_user.html',business = listBusiness,name=un,likes=likes)
+		cur=mysql.connection.cursor()
+		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+		views = cur.fetchall()
+		cur.close()
+		return render_template('business_user.html',business = listBusiness,name=un,likes=likes,views=views)
 
-@app.route('/health',methods=['GET','POST'])
+@app.route('/health',)
 def healthPage():
 	setHealth = set()
 	listHealth = []
@@ -419,33 +514,48 @@ def healthPage():
 		else:
 			setHealth.add(title['title'])
 			listHealth.append(title)
+	cur=mysql.connection.cursor()
+	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+	views = cur.fetchall()
+	cur.close()
 	if loggedin==False:
-		return render_template('health.html',health = listHealth)
+		return render_template('health.html',health = listHealth,views=views)
 	else:
 		if request.method == 'POST':
 			title = request.form['title']
 			cur=mysql.connection.cursor()
-			temp=cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
+			temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
 			if temp<=0:
-				new = Comments(title,1)
+				new = Likes(title,1)
 				db.session.add(new)
 				db.session.commit()
 			else:
-				cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
+				cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
 				likes=cur.fetchone()['likes']
 				likes=int(likes)
 				print (likes)
 				likes+=1
 				print (likes)
 				likes=str(likes)
-				cur.execute("""UPDATE Comments SET likes = %s WHERE news = %s""",[likes,title])
+				cur.execute("""UPDATE Likes SET likes = %s WHERE news = %s""",[likes,title])
 				mysql.connection.commit()
 				cur.close()
+		if 'Comments' in request.form:
+				username = un
+				title = request.form['title']
+				comments = request.form['comment']
+				new = Views(title,username,comments)
+				db.session.add(new)
+				db.session.commit()
 		cur=mysql.connection.cursor()
-		temp=cur.execute("""SELECT news,likes FROM Comments""")
+		temp=cur.execute("""SELECT news,likes FROM Likes""")
 		likes = cur.fetchall()
 		cur.close()
-		return render_template('health_user.html',health= listHealth,name=un,likes=likes)
+		cur=mysql.connection.cursor()
+		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+		views = cur.fetchall()
+		cur.close()
+		return render_template('health_user.html',health= listHealth,name=un,likes=likes,views=views)
 
 
 
@@ -569,33 +679,49 @@ def result(keywords):
 	if flag == 0:
 		flash('Sorry,No results found :(')
 		return redirect(url_for('search'))
+	cur=mysql.connection.cursor()
+	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+	views = cur.fetchall()
+	cur.close()
 	if loggedin==False:
-		return render_template('results.html',results=total,keyword=keywords)
+		return render_template('results.html',results=total,keyword=keywords,views=views)
 	else:
 		if request.method == 'POST':
 			title = request.form['title']
 			cur=mysql.connection.cursor()
-			temp=cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
+			temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
 			if temp<=0:
-				new = Comments(title,1)
+				new = Likes(title,1)
 				db.session.add(new)
 				db.session.commit()
 			else:
-				cur.execute("""SELECT * FROM Comments WHERE news= %s """,[title])
+				cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
 				likes=cur.fetchone()['likes']
 				likes=int(likes)
 				print (likes)
 				likes+=1
 				print (likes)
 				likes=str(likes)
-				cur.execute("""UPDATE Comments SET likes = %s WHERE news = %s""",[likes,title])
+				cur.execute("""UPDATE Likes SET likes = %s WHERE news = %s""",[likes,title])
 				mysql.connection.commit()
 				cur.close()
+		if 'Comments' in request.form:
+				username = un
+				title = request.form['title']
+				comments = request.form['comment']
+				new = Views(title,username,comments)
+				db.session.add(new)
+				db.session.commit()
 		cur=mysql.connection.cursor()
-		temp=cur.execute("""SELECT news,likes FROM Comments""")
+		temp=cur.execute("""SELECT news,likes FROM Likes""")
 		likes = cur.fetchall()
 		cur.close()
-		return render_template('result_user.html',results = total,keyword =keywords,name=un,likes=likes)			
+		cur=mysql.connection.cursor()
+		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+		views = cur.fetchall()
+		cur.close()
+		return render_template('result_user.html',results = total,keyword =keywords,name=un,likes=likes,views=views)			
+
 
 if __name__=='__main__':
 	app.secret_key=("secretkey")

@@ -1,7 +1,5 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from newsapi import NewsApiClient as client  
-import requests
 from app import *
 
 
@@ -32,20 +30,34 @@ class user(db.Model):
 		self.email=email
 
 
-class Comments(db.Model):
+class Likes(db.Model):
 
-	__tablename__ = "Comments"
+	__tablename__ = "Likes"
+
+	uid = db.Column(db.Integer,primary_key=True,autoincrement=True)
+	news = db.Column(db.String(length =300,convert_unicode =True),nullable = False,unique=True)
+	likes=db.Column(db.Text)
+
+	def __init__(self,news,likes):
+		self.news=news
+		self.likes=likes
+
+
+
+
+class Views(db.Model):
+
+	__tablename__ = "Views"
 
 	uid = db.Column(db.Integer,primary_key=True,autoincrement=True)
 	news = db.Column(db.String(length =300,convert_unicode =True),nullable = False)
 	user = db.Column(db.String(length=30))
 	comments = db.Column(db.Text)
-	likes = db.Column(db.Text)
+	
 
-	def __init__(self,news,likes='0',user='empty',comments='none'):
+	def __init__(self,news,user='empty',comments='none'):
 		self.news = news
 		self.user = user
-		self.likes = likes
 		self.comments = comments
 
 
