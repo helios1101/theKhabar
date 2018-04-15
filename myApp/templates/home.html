@@ -1,17 +1,108 @@
-{% extends 'layout.html' %}
-{% block body %}
-<!-- <div class="container" style="align-content: center; margin: 10px; border: 3px solid black;">
-  <div class="carousel carousel-slider" style="align-self: center;">
-  	{% for news in homenews %}
-    <a class="carousel-item" href="{{news['url']}}"><img src="{{news['image']}}"></a>
-    <p>{{news['title']}}</p>
-    {% endfor %}
-  </div> -->
-</div>
-	<div class="jumbotron text-center" style="margin:20px;">
-		<h1>Welcome to NEWS APP</h1>
-		<p>Created by Darth and Leonardo</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>theKHABAR</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+	 <nav class="navbar navbar-inverse">	
+  <div class="container-fluid">
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="/general">General</a></li>
+      <li><a href="/sports">Sports</a></li>
+      <li><a href="/business">Business</a></li>
+      <li><a href="/science">Scince</a></li>
+      <li><a href="/entertainment">Entertainment</a></li>
+      <li><a href="/technology">Technology</a></li>
+      <li><a href="/health">Health</a></li>
+    </ul>
+  </div>
+</nav> 
+<div class="container" style="width:70%">
+  <div id="myCarousel" class="carousel slide" data-ride="carousel">
+    <ol class="carousel-indicators">
+      <li data-target="#myCarousel" data-slide-to="0"></li>
+      <li data-target="#myCarousel" data-slide-to="1"></li>
+      <li data-target="#myCarousel" data-slide-to="2"></li>
+      <li data-target="#myCarousel" data-slide-to="3"></li>
+      <li data-target="#myCarousel" data-slide-to="4"></li>
+    </ol>
+
+    <div class="carousel-inner">
+      <div class="item active">
+      	<a href="{{homenews[0]['url']}}">
+        <img src="{{homenews[0]['image']}}"  style="width:100%;">
+        <div class="carousel-caption">
+        	<div style="background-color: grey;width: inline;padding: 10px;opacity: 0.7 ">
+        	<h3 style="color:black;"><b>{{homenews[0]['title']}}</b></h3>
+        	<p style="color:black">{{homenews[0]['description']}}</p>
+        </div>
+        </div>
+    </a>
+      </div>
+
+      <div class="item">
+      	<a href="{{homenews[1]['url']}}">
+        <img src="{{homenews[1]['image']}}" style="width:100%;">
+        <div class="carousel-caption">
+        	<div style="background-color: grey;width: inline;padding: 10px;opacity: 0.7 ">
+        	<h3 style="color:black;"><b>{{homenews[1]['title']}}</b></h3>
+        	<p style="color:black">{{homenews[1]['description']}}</p>
+        </div>
+        </div>
+    </a>
+      </div>
+    
+      <div class="item">
+      	<a href="{{homenews[2]['url']}}">
+        <img src="{{homenews[2]['image']}}" style="width:100%;">
+        <div class="carousel-caption">
+        	<div style="background-color: grey;width: inline;padding: 10px;opacity: 0.7 ">
+        	<h3 style="color:black;"><b>{{homenews[2]['title']}}</b></h3>
+        	<p style="color:black">{{homenews[2]['description']}}</p>
+        </div>
+        </div>
+    </a>
+      </div>
+      <div class="item">
+      	<a href="{{homenews[3]['url']}}">
+        <img src="{{homenews[3]['image']}}" style="width:100%;">
+        <div class="carousel-caption">
+        	<div style="background-color: grey;width: inline;padding: 10px;opacity: 0.7 ">
+        	<h3 style="color:black;"><b>{{homenews[3]['title']}}</b></h3>
+        	<p style="color:black">{{homenews[3]['description']}}</p>
+        </div>
+        </div>
+    </a>
+      </div>
+      <div class="item">
+      	<a href="{{homenews[4]['url']}}">
+        <img src="{{homenews[4]['image']}}" style="width:100%;">
+        <div class="carousel-caption">
+        	<div style="background-color: grey;width: inline;padding: 10px;opacity: 0.7 ">
+        	<h3 style="color:black;"><b>{{homenews[4]['title']}}</b></h3>
+        	<p style="color:black">{{homenews[4]['description']}}</p>
+        </div>
+        </div>
+    </a>
+      </div>
+    </div>
+
+    <!-- Left and right controls -->
+    <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+      <span class="glyphicon glyphicon-chevron-left"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="right carousel-control" href="#myCarousel" data-slide="next">
+      <span class="glyphicon glyphicon-chevron-right"></span>
+      <span class="sr-only">Next</span>
+    </a>
+  </div>
 </div>
 
-        
-{% endblock %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</body>
+</html>
