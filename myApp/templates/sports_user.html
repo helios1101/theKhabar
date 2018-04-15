@@ -46,11 +46,11 @@
                 <h4>{{news['title']}}</h4>
                 <p>{{news['summary']}}</p>
                 <form method = 'POST' action="">
-                  <input type = "text" name = "username" value = "{{un}}" style="display: none">
-                  <input type = "text" name = "title" value = "{{news['title']}}" style="display: none">
+                  <input type = "text" name = "username" value = "{{un}}" id = "username" style="display: none">
+                  <input type = "text" name = "title" value = "{{news['title']}}" id ="title" style="display: none">
                   <label style="color: black; font-size: 15px;">Comment</label>
-                  <input type="text" name="comment" >
-                  <button class="btn-floating waves-effect waves-light blue" type="submit" name="Comments" >
+                  <input type="text" name="comment" id ="comment">
+                  <button class="btn-floating waves-effect waves-light blue " id ="random" type="submit" name="Comments" >
                     <i class="material-icons">create</i>
                   </button>         
                 </form>

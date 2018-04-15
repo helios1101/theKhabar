@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,jsonify
 from flask import flash
 from flask import redirect
 from flask import url_for
@@ -216,6 +216,17 @@ def sportPage():
 		cur.close()
 		return render_template('sports_user.html',sports = listSports,name=un,likes=likes,views=views)
 	
+# @app.route('/updates',methods= ['POST'])
+# def update():
+# 	username = request.form['username']
+# 	title = request.form['title']
+# 	comments = request.form['comment']
+# 	new=Views(title,username,comments)
+# 	db.session.add(new)
+# 	db.session.commit()
+
+# 	return jsonify({'result':'success'})
+
 @app.route('/general',methods=['GET','POST'])
 def generalPage():
 	setGeneral = set()
