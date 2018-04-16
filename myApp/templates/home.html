@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <title>theKHABAR</title>
@@ -7,6 +7,9 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 <body>
+<div style="background-color: black;color: white;width: inline;height: 50px">
+  <h1 style="text-align: center"><b><i>the</i>&emsp;KHABAR</b></h1>
+</div>
 	 <nav class="navbar navbar-inverse">	
   <div class="container-fluid">
     <ul class="nav navbar-nav navbar-right">
@@ -90,7 +93,6 @@
       </div>
     </div>
 
-    <!-- Left and right controls -->
     <a class="left carousel-control" href="#myCarousel" data-slide="prev">
       <span class="glyphicon glyphicon-chevron-left"></span>
       <span class="sr-only">Previous</span>
@@ -106,3 +108,65 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>
 </html>
+ -->
+{% extends 'layout.html' %}
+{% block body %}
+<div class="jumbotron text-center" style="margin: 20px">
+    <h1>Welcome to the KHABAR</h1>
+    </div>
+<div style="background-color: black; padding:20px">
+  {% for news_row in homenews|batch(2) %}
+<div class="row">
+  {%for news in news_row%}
+  <div class="col s1">
+  <div class="row">
+    <div class="col s12 m7">
+      <div class="card">
+        <div class="card-image">
+          <img src="{{news['image']}}"
+          onerror="this.src='https://upload.wikimedia.org/wikipedia/en/thumb/4/41/Flag_of_India.svg/1200px-Flag_of_India.svg.png';"
+          >
+          <span class="card-title">{{news['title']}}</span>
+        </div>
+        <div class="card-content">
+          <p>
+            {{news['description']}}
+          </p>
+        </div>
+        <div class="card-action">
+            <a href="{{news['url']}}">Go To Site</a>
+            <button data-target="modal{{homenews.index(news)}}" class="btn modal-trigger">Read more</button>
+            <div id="modal{{homenews.index(news)}}" class="modal modal-fixed-footer">
+              <div class="modal-content">
+                <h4>{{news['title']}}</h4>
+                <p>{{news['summary']}}</p>
+                <h6><u>Comments:</u></h6>
+                <!-- <ul class="collection"> -->
+                  {% for i in views %}
+                  {% if news['title'] == i['news'] %}
+                  <!-- <li class="collection-item avatar"> -->
+                    <div style="background-color: lightgrey;margin: 5px;padding: 5px">
+                    <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMvm6UclGzn245GcuvQ20eJaY5nugtX7HosGOB43IqogmB_ohz" alt="" class="circle responsive-img" width="40px" >
+                    <span class="title"><b><i>POSTED_BY: </i></b>{{i['user']}}</span></p>
+                    <p><span class="title"><b><i>COMMENT: </i></b>{{i['comments']}}</span></p></div>
+                 <!-- </li> -->
+                 {% endif %}
+                 {% endfor %}
+                 <!-- </ul> -->
+
+
+               </div>
+               <div class="modal-footer">
+
+               </div>
+             </div>
+           </div>
+      </div>
+    </div>
+  </div>
+</div>
+{%endfor%}
+</div>
+{% endfor %}
+</div>
+{% endblock %}

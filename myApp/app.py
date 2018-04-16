@@ -18,14 +18,14 @@ from flask_sqlalchemy import SQLAlchemy
 loggedin=False
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:aarush123@@localhost/NEWS'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:#Neel1998@localhost/NEWS'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True 
 db = SQLAlchemy(app)
-news = MySQLdb.connect(host = "localhost",user = "root",passwd = "aarush123@",db="NEWS")
+news = MySQLdb.connect(host = "localhost",user = "root",passwd = "#Neel1998",db="NEWS")
 newsCursor = news.cursor(cursorclass=MySQLdb.cursors.DictCursor)
 app.config['MYSQL_HOST']='localhost'
 app.config['MYSQL_USER']='root'	
-app.config['MYSQL_PASSWORD']='aarush123@'
+app.config['MYSQL_PASSWORD']='#Neel1998'
 app.config['MYSQL_DB']='NEWS'
 app.config['MYSQL_CURSORCLASS']='DictCursor'
 
@@ -67,6 +67,20 @@ class RegisterForm(Form):
 	confirm=PasswordField('Confirm Password')
 @app.route('/register',methods=['GET','POST'])
 def register():
+	setGeneral = set()
+	listGeneral = []
+	instGeneral = """select * from General order by date DESC"""
+	newsCursor.execute(instGeneral)
+	general = newsCursor.fetchall()
+	x=0
+	for title in general:
+		if title['title'] in setGeneral:
+			pass 
+		else:
+			setGeneral.add(title['title'])
+			if x<5:
+				listGeneral.append(title)
+				x+=1
 	form = RegisterForm(request.form)
 	if request.method=='POST' and form.validate():
 		name=request.form['name']
@@ -81,10 +95,24 @@ def register():
 			newuser=user(name,usern,email,password)
 			db.session.add(newuser)
 			db.session.commit()
-			return render_template('user_home.html',name=usern)
+			return render_template('user_home.html',name=usern,homenews=listGeneral)
 	return render_template('register.html',form=form)
 @app.route('/login',methods=['GET','POST'])
 def login():
+	setGeneral = set()
+	listGeneral = []
+	instGeneral = """select * from General order by date DESC"""
+	newsCursor.execute(instGeneral)
+	general = newsCursor.fetchall()
+	x=0
+	for title in general:
+		if title['title'] in setGeneral:
+			pass 
+		else:
+			setGeneral.add(title['title'])
+			if x<5:
+				listGeneral.append(title)
+				x+=1
 	db.session.commit()
 	if request.method=='POST':
 		usern1=request.form['username']
@@ -100,7 +128,7 @@ def login():
 					global loggedin
 					loggedin=True
 					#print (loggedin)
-					return render_template('user_home.html',name=usern1)
+					return render_template('user_home.html',name=usern1,homenews=listGeneral)
 				else:
 					flash("AUTHENTICATION FAILED")
 					return render_template('login.html')	
