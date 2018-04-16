@@ -1,6 +1,32 @@
 {% extends 'layout_user.html' %}
 {% block body %}
 	<div class="jumbotron text-center">
-		<h1>Welcome {{name}}</h1>
-		</div>
+		<h2>Welcome {{name}}</h2>
+		Here are the top headlines from your favourite topics
+
+	</div>
+	{% for news_row in news|batch(2) %}
+<div class="row">
+  {%for news in news_row%}
+  <div class="col s1">
+	<div class="row">
+    <div class="col s12 m7">
+      <div class="card">
+        <div class="card-image">
+          <img src="{{news['image']}}"
+          onerror="this.onerror=null;this.src='https://i0.wp.com/www.insidesport.co/wp-content/uploads/2017/05/Leed-Story-5.jpg?fit=1068%2C713&ssl=1';">
+          <span class="card-title">{{news['title']}}</span>
+        </div>
+        <div class="card-content">
+          <p>
+          	{{news['description']}}
+          </p>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        {% endfor %}
+        </div>
+{% endfor %}
 {% endblock %}

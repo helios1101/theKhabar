@@ -14,7 +14,7 @@ from wtforms import Form,StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from models import *
 from flask_sqlalchemy import SQLAlchemy
-
+from random import shuffle
 loggedin=False
 
 app = Flask(__name__)
@@ -72,13 +72,20 @@ def register():
 		name=request.form['name']
 		email=request.form['email']
 		usern=request.form['username']
+		order =[]
+		orderlist = ['Sports','Entertainment','General','Business','Health','Science','Technology']
+		for category in orderlist:
+			if request.form.get(category):
+				order.append(category)
+		print(order)
+		order = ','.join(order)
 		password=sha256_crypt.encrypt(str(request.form['password']))
 		check=user.query.filter_by(username=usern).first()
 		if(check is not None):
 			flash("USERNAME ALREADY TAKEN")
 			return render_template('register.html',form=form)
 		else:
-			newuser=user(name,usern,email,password)
+			newuser=user(name,usern,email,password,order)
 			db.session.add(newuser)
 			db.session.commit()
 			return render_template('user_home.html',name=usern)
@@ -99,7 +106,6 @@ def login():
 					un=usern1
 					global loggedin
 					loggedin=True
-					#print (loggedin)
 					return render_template('user_home.html',name=usern1)
 				else:
 					flash("AUTHENTICATION FAILED")
@@ -117,7 +123,38 @@ def logout():
 	return render_template('logout.html')
 @app.route('/user_home')
 def user_home():
-	return render_template('user_home.html',name=un)
+	cur=mysql.connection.cursor()
+	us=cur.execute("SELECT * FROM userInfo WHERE username=%s",[un])
+	order=cur.fetchone()['order']
+	cur.close()
+	cur=mysql.connection.cursor()
+	order = order.split(',')
+	news =()
+	if 'Sports' in order:
+		cur.execute("""SELECT * FROM Sports LIMIT 1,3""")
+		news+=cur.fetchall()
+	if 'Entertainment' in order:
+		cur.execute("""SELECT * FROM Entertainment LIMIT 1,3""")
+		news+=cur.fetchall()
+	if 'Health' in order:
+		cur.execute("""SELECT * FROM Health LIMIT 1,3""")
+		news+=cur.fetchall()
+	if 'Business' in order:
+		cur.execute("""SELECT * FROM Business LIMIT 1,3""")
+		news+=cur.fetchall()
+	if 'General' in order:
+		cur.execute("""SELECT * FROM General LIMIT 1,3""")
+		news+=cur.fetchall()
+	if 'Science' in order:
+		cur.execute("""SELECT * FROM Science LIMIT 1,3""")
+		news+=cur.fetchall()
+	if 'Technology' in order:
+		cur.execute("""SELECT * FROM Technology LIMIT 1,3""")
+		news+=cur.fetchall()
+	cur.close()
+	news=list(news)
+	print(news)
+	return render_template('user_home.html',name=un,news=news)
 @app.route('/change',methods=['GET','POST'])
 def change():
 	if request.method=='POST':
