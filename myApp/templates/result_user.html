@@ -4,6 +4,7 @@
 	<h4 style="text-align: center;"><u>Search Results</u></p>
 	<p>Here are the articles with keyword "{{keyword}}"</p>
 </div>
+<div style="background-color: black; padding:20px">
 	{% for news_row in results|batch(2) %}
 <div class="row">
   {%for news in news_row%}
@@ -91,5 +92,5 @@
 {%endfor%}
 </div>
 {% endfor %}
-
+</div>
 {% endblock %}

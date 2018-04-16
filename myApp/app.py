@@ -67,6 +67,20 @@ class RegisterForm(Form):
 	confirm=PasswordField('Confirm Password')
 @app.route('/register',methods=['GET','POST'])
 def register():
+	setGeneral = set()
+	listGeneral = []
+	instGeneral = """select * from General order by date DESC"""
+	newsCursor.execute(instGeneral)
+	general = newsCursor.fetchall()
+	x=0
+	for title in general:
+		if title['title'] in setGeneral:
+			pass 
+		else:
+			setGeneral.add(title['title'])
+			if x<5:
+				listGeneral.append(title)
+				x+=1
 	form = RegisterForm(request.form)
 	if request.method=='POST' and form.validate():
 		name=request.form['name']
@@ -77,7 +91,7 @@ def register():
 		for category in orderlist:
 			if request.form.get(category):
 				order.append(category)
-		print(order)
+		
 		order = ','.join(order)
 		password=sha256_crypt.encrypt(str(request.form['password']))
 		check=user.query.filter_by(username=usern).first()
@@ -88,10 +102,26 @@ def register():
 			newuser=user(name,usern,email,password,order)
 			db.session.add(newuser)
 			db.session.commit()
-			return render_template('user_home.html',name=usern)
+			return redirect(url_for('login'))
 	return render_template('register.html',form=form)
+
+
 @app.route('/login',methods=['GET','POST'])
 def login():
+	setGeneral = set()
+	listGeneral = []
+	instGeneral = """select * from General order by date DESC"""
+	newsCursor.execute(instGeneral)
+	general = newsCursor.fetchall()
+	x=0
+	for title in general:
+		if title['title'] in setGeneral:
+			pass 
+		else:
+			setGeneral.add(title['title'])
+			if x<5:
+				listGeneral.append(title)
+				x+=1
 	db.session.commit()
 	if request.method=='POST':
 		usern1=request.form['username']
@@ -106,7 +136,7 @@ def login():
 					un=usern1
 					global loggedin
 					loggedin=True
-					return render_template('user_home.html',name=usern1)
+					return redirect(url_for('user_home'))
 				else:
 					flash("AUTHENTICATION FAILED")
 					return render_template('login.html')	
@@ -119,8 +149,8 @@ def logout():
 	session.clear()
 	global loggedin
 	loggedin=False
-	#print(loggedin)
-	return render_template('logout.html')
+	flash("Successfully logged out")
+	return redirect(url_for('index'))
 @app.route('/user_home')
 def user_home():
 	cur=mysql.connection.cursor()
@@ -129,32 +159,93 @@ def user_home():
 	cur.close()
 	cur=mysql.connection.cursor()
 	order = order.split(',')
-	news =()
+	setNews = set()
+	listNews=[]
 	if 'Sports' in order:
-		cur.execute("""SELECT * FROM Sports LIMIT 1,3""")
-		news+=cur.fetchall()
+		cur.execute("""SELECT * FROM Sports """)
+		news = cur.fetchall()
+		count=0
+		for title in news:
+			if title['title'] in setNews:
+				pass
+			else:
+				setNews.add(title['title'])
+				listNews.append(title)
+
 	if 'Entertainment' in order:
-		cur.execute("""SELECT * FROM Entertainment LIMIT 1,3""")
-		news+=cur.fetchall()
+		cur.execute("""SELECT * FROM Entertainment """)
+		news = cur.fetchall()
+		count=0
+		for title in news:
+			if title['title'] in setNews:
+				pass
+			else:
+				setNews.add(title['title'])
+				listNews.append(title)
+				
 	if 'Health' in order:
-		cur.execute("""SELECT * FROM Health LIMIT 1,3""")
-		news+=cur.fetchall()
+		cur.execute("""SELECT * FROM Health """)
+		news = cur.fetchall()
+		count=0
+		for title in news:
+			if title['title'] in setNews:
+				pass
+			
+			else:
+				setNews.add(title['title'])
+				listNews.append(title)
+				
 	if 'Business' in order:
-		cur.execute("""SELECT * FROM Business LIMIT 1,3""")
-		news+=cur.fetchall()
+		cur.execute("""SELECT * FROM Business """)
+		news = cur.fetchall()
+		
+		for title in news:
+			if title['title'] in setNews:
+				pass
+			else:
+				setNews.add(title['title'])
+				listNews.append(title)
+				
 	if 'General' in order:
-		cur.execute("""SELECT * FROM General LIMIT 1,3""")
-		news+=cur.fetchall()
+		cur.execute("""SELECT * FROM General """)
+		news = cur.fetchall()
+		count=0
+		for title in news:
+			if title['title'] in setNews:
+				pass
+			
+			else:
+				setNews.add(title['title'])
+				listNews.append(title)
+				
 	if 'Science' in order:
-		cur.execute("""SELECT * FROM Science LIMIT 1,3""")
-		news+=cur.fetchall()
+		cur.execute("""SELECT * FROM Science """)
+		news = cur.fetchall()
+		count=0
+		for title in news:
+			if title['title'] in setNews:
+				pass
+			
+			else:
+				setNews.add(title['title'])
+				listNews.append(title)
+				
 	if 'Technology' in order:
-		cur.execute("""SELECT * FROM Technology LIMIT 1,3""")
-		news+=cur.fetchall()
+		cur.execute("""SELECT * FROM Technology """)
+		news = cur.fetchall()
+		count=0
+		for title in news:
+			if title['title'] in setNews:
+				pass
+			if count>2:
+				break
+			else:
+				setNews.add(title['title'])
+				listNews.append(title)
+				count = count+1
 	cur.close()
-	news=list(news)
-	print(news)
-	return render_template('user_home.html',name=un,news=news)
+	shuffle(listNews)
+	return render_template('user_home.html',name=un,homenews=listNews)
 @app.route('/change',methods=['GET','POST'])
 def change():
 	if request.method=='POST':

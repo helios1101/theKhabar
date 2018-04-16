@@ -1,5 +1,6 @@
 {% extends 'layout_user.html' %}
 {% block body %}
+<div style="background-color: black; padding:20px">
   {% for news_row in general|batch(2) %}
 <div class="row">
   {%for news in news_row%}
@@ -88,4 +89,5 @@
 {%endfor%}
 </div>
 {% endfor %}
+</div>
 {% endblock %}
