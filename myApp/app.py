@@ -53,8 +53,8 @@ def index():
 				listGeneral.append(title)
 				x+=1
 	return render_template('home.html',homenews=listGeneral)
-@app.route('/about')
-def about():
+@app.route('/credits')
+def credits():
 	return render_template('about.html')
 class RegisterForm(Form):
 	name=StringField('Name',[validators.Length(min=1,max=50)])
