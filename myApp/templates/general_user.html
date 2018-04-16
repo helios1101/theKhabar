@@ -12,12 +12,10 @@
           onerror="this.src='https://upload.wikimedia.org/wikipedia/en/thumb/4/41/Flag_of_India.svg/1200px-Flag_of_India.svg.png';">
           <form method = "POST", action="">
               <input type = "text" name = "title" value = "{{news.title}}" style="display: none">
-              
-              <button class="btn-floating halfway-fab waves-effect waves-light blue" type="submit" name="action">
+              <input type = "text" name = "username" value = "{{un}}" id = "username" style="display: none">
+              <button class="btn-floating halfway-fab waves-effect waves-light blue" type="submit" name="Like" value = "Like" action ="Like">
                 <i class="material-icons">thumb_up</i>
-              </button>
-              
-              
+              </button>       
               
             </form>
           </div>
@@ -27,7 +25,7 @@
               <b>
               {% for i in likes  %}
               {%- if news.title in i.values() %}
-              {{i['likes']}} people liked it.
+              {{i['count(likes)']}} people liked it.
               {{break}}
               {% endif %}
               {% endfor %}

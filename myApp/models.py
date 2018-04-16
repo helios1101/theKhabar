@@ -35,11 +35,13 @@ class Likes(db.Model):
 	__tablename__ = "Likes"
 
 	uid = db.Column(db.Integer,primary_key=True,autoincrement=True)
-	news = db.Column(db.String(length =300,convert_unicode =True),nullable = False,unique=True)
-	likes=db.Column(db.Text)
+	news = db.Column(db.String(length =300,convert_unicode =True),nullable = False)
+	user = db.Column(db.String(length=30))
+	likes=db.Column(db.Integer)
 
-	def __init__(self,news,likes):
+	def __init__(self,news,username,likes):
 		self.news=news
+		self.user=username
 		self.likes=likes
 
 
