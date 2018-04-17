@@ -47,34 +47,6 @@ INSERT INTO `Business` VALUES (1,'Mahindra Electric ties up with Zoomcar to offe
 UNLOCK TABLES;
 
 --
--- Table structure for table `Comments`
---
-
-DROP TABLE IF EXISTS `Comments`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-/*
-CREATE TABLE `Comments` (
-  `uid` int(11) NOT NULL AUTO_INCREMENT,
-  `news` varchar(300) NOT NULL,
-  `user` varchar(30) DEFAULT NULL,
-  `comments` text,
-  `likes` text,
-  PRIMARY KEY (`uid`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client ;
-
---
--- Dumping data for table `Comments`
---
-
-LOCK TABLES `Comments` WRITE;
-/*!40000 ALTER TABLE `Comments` DISABLE KEYS ;
-INSERT INTO `Comments` VALUES (1,'CWG: Shooters Ashab, Ankur enter double trap final','empty','none','13'),(2,'Asia Cup shifted out of India; BCCI to host in UAE','empty','none','3'),(3,'AS Roma coach Eusebio Di Francesco praised for invention after ousting Barcelona in Champions League','empty','none','2'),(4,'David Willey confirmed to join CSK as replacement player','empty','none','1'),(5,'Champions League: Barcelona coach Ernesto Valverde expects Roma to have more \'intensity\' in second-leg','empty','none','2'),(6,'For KL Rahul, IPL 2018 is an opportunity to make his case all over again','empty','none','4'),(7,'Commonwealth Games 2018: India Beat Malaysia 2-1 In Men\'s Hockey To Book Semis Berth','empty','none','2'),(8,'Commonwealth Games 2018: India\'s historic badminton team gold makes them a true heavyweight in the sport','empty','none','1'),(9,'Flintoff queries ball tampering findings','empty','none','1'),(10,'Alia Bhatt as Sehmat in Raazi: Who was the real Sehmat Khan?','empty','none','1');
-/*!40000 ALTER TABLE `Comments` ENABLE KEYS ;
-UNLOCK TABLES;
-*/
---
 -- Table structure for table `Entertainment`
 --
 
@@ -177,10 +149,10 @@ DROP TABLE IF EXISTS `Likes`;
 CREATE TABLE `Likes` (
   `uid` int(11) NOT NULL AUTO_INCREMENT,
   `news` varchar(300) NOT NULL,
-  `likes` text,
-  PRIMARY KEY (`uid`),
-  UNIQUE KEY `news` (`news`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+  `user` varchar(30) DEFAULT NULL,
+  `likes` int(11) DEFAULT NULL,
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -189,7 +161,7 @@ CREATE TABLE `Likes` (
 
 LOCK TABLES `Likes` WRITE;
 /*!40000 ALTER TABLE `Likes` DISABLE KEYS */;
-INSERT INTO `Likes` VALUES (1,'CWG: Shooters Ashab, Ankur enter double trap final','4'),(2,'Asia Cup shifted out of India; BCCI to host in UAE','4'),(3,'Andres Iniesta \'Pained\' as Barcelona Suffer Shock Defeat in Rome','1'),(4,'Champions League: Barcelona coach Ernesto Valverde expects Roma to have more \'intensity\' in second-leg','1'),(5,'Mahindra Electric ties up with Zoomcar to offer 100 EVs in Delhi','1');
+INSERT INTO `Likes` VALUES (2,'dhoni','dhoniswer',1),(3,'dhoni','daadd',1),(4,'dhonisae','daadd',1),(5,'CWG: Shooters Ashab, Ankur enter double trap final','',1),(6,'Asia Cup shifted out of India; BCCI to host in UAE','',1),(7,'CWG: Shooters Ashab, Ankur enter double trap final','daddyishome',1),(8,'CWG: Shooters Ashab, Ankur enter double trap final','daddyishome',1),(9,'Asia Cup shifted out of India; BCCI to host in UAE','daddyishome',1),(10,'Asia Cup shifted out of India; BCCI to host in UAE','daddyishome',1),(11,'CWG: Shooters Ashab, Ankur enter double trap final','daddyishome',1),(12,'CWG: Shooters Ashab, Ankur enter double trap final','daddyishome',1),(13,'AS Roma coach Eusebio Di Francesco praised for invention after ousting Barcelona in Champions League','daddyishome',1),(14,'Andres Iniesta \'Pained\' as Barcelona Suffer Shock Defeat in Rome','daddyishome',1),(15,'Asia Cup shifted out of India; BCCI to host in UAE','daddyishome',1),(16,'India at CWG, day 6: Heena, men\'s hockey team, boxers lift medal count','daddyishome',1),(17,'Wanna spend holidays in space? Luxury space hotel Aurora Station to launch by 2022','daddyishome',1),(18,'Commonwealth Games 2018 Live updates, Day 6, Gold Coast','daddyishome',1);
 /*!40000 ALTER TABLE `Likes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -299,7 +271,7 @@ CREATE TABLE `Views` (
   `user` varchar(30) DEFAULT NULL,
   `comments` text,
   PRIMARY KEY (`uid`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -308,7 +280,7 @@ CREATE TABLE `Views` (
 
 LOCK TABLES `Views` WRITE;
 /*!40000 ALTER TABLE `Views` DISABLE KEYS */;
-INSERT INTO `Views` VALUES (1,'Andres Iniesta \'Pained\' as Barcelona Suffer Shock Defeat in Rome','daddyishome','woah'),(2,'AS Roma coach Eusebio Di Francesco praised for invention after ousting Barcelona in Champions League','daddyishome','shocking'),(3,'Andres Iniesta \'Pained\' as Barcelona Suffer Shock Defeat in Rome','daddyisback','awesome'),(4,'CWG 2018: How a massive error in judgement cost 17-year-old Mehuli Ghosh a gold medal','daddyishome','great'),(5,'CWG 2018: How a massive error in judgement cost 17-year-old Mehuli Ghosh a gold medal','daddyishome','should represent india more'),(6,'CWG: Shooters Ashab, Ankur enter double trap final','daddyishome','hey'),(7,'Mahindra Electric ties up with Zoomcar to offer 100 EVs in Delhi','daddyishome','awesome'),(8,'Asia Cup shifted out of India; BCCI to host in UAE','kunal','nice job');
+INSERT INTO `Views` VALUES (1,'Andres Iniesta \'Pained\' as Barcelona Suffer Shock Defeat in Rome','daddyishome','woah'),(2,'AS Roma coach Eusebio Di Francesco praised for invention after ousting Barcelona in Champions League','daddyishome','shocking'),(3,'Andres Iniesta \'Pained\' as Barcelona Suffer Shock Defeat in Rome','daddyisback','awesome'),(4,'CWG 2018: How a massive error in judgement cost 17-year-old Mehuli Ghosh a gold medal','daddyishome','great'),(5,'CWG 2018: How a massive error in judgement cost 17-year-old Mehuli Ghosh a gold medal','daddyishome','should represent india more'),(6,'CWG: Shooters Ashab, Ankur enter double trap final','daddyishome','hey'),(7,'Mahindra Electric ties up with Zoomcar to offer 100 EVs in Delhi','daddyishome','awesome'),(8,'Asia Cup shifted out of India; BCCI to host in UAE','kunal','nice job'),(9,'Alia Bhatt as Sehmat in Raazi: Who was the real Sehmat Khan?','daddyishome','nice'),(10,'Commonwealth Games 2018 Live updates, Day 6, Gold Coast','daddyishome','co'),(11,'CWG: Shooters Ashab, Ankur enter double trap final','daddyishome','cool'),(12,'Alia Bhatt as Sehmat in Raazi: Who was the real Sehmat Khan?','daddyishome',''),(13,'Alia Bhatt as Sehmat in Raazi: Who was the real Sehmat Khan?','daddyishome','gg'),(14,'NASA set for historic first Mars-bound mission','daddyishome','awesome'),(15,'Want to buy a dinosaur? Two on sale in Paris','daddyishome','interesting'),(16,'How to stem the rot in the banking sector','daddyishome','tatti'),(17,'How to stem the rot in the banking sector','daddyishome','tatti');
 /*!40000 ALTER TABLE `Views` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -325,8 +297,9 @@ CREATE TABLE `userInfo` (
   `username` varchar(300) DEFAULT NULL,
   `email` varchar(300) DEFAULT NULL,
   `password` varchar(300) DEFAULT NULL,
+  `order` varchar(300) NOT NULL,
   PRIMARY KEY (`uid`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -335,7 +308,7 @@ CREATE TABLE `userInfo` (
 
 LOCK TABLES `userInfo` WRITE;
 /*!40000 ALTER TABLE `userInfo` DISABLE KEYS */;
-INSERT INTO `userInfo` VALUES (1,'papa','daddyishome','safdfg','$5$rounds=535000$pMt1fNJ0bUc3C7FK$eDfv.KYsbo0PMz0zpy9tlqGSaNa.b2kmearaG5yyqk3'),(2,'sdf','daddyisback','dfgh','$5$rounds=535000$nm60I8IqjnhXjgUI$eIf/vK6J9Xww7qe8SwGJKfQVICHjP6zxWfSQ5ZXX8gB'),(3,'kunal','kunal','kunalchutiya','$5$rounds=535000$5gtLdOcesCFYeOQJ$EgEuUJWWMJFgylxfl83ozpji2NR1XIQ3sQjO416LOp2');
+INSERT INTO `userInfo` VALUES (1,'ksafd','daddyishome','afds','$5$rounds=535000$Oj8gv5Xl3z8s4fVJ$3rJgPIPDBQxQuPr3xjSBGhKH9ywBXshcO.uc4FUeS02','Sports,Entertainment,General'),(2,'asdfg','daddyisback','sdfghj','$5$rounds=535000$oxDwFrC8XpUl2arN$Ubr6o4Vwme/CakCx9ib.GqU2yBsTfdlwp.dGfqFjCB/','Business,Health,Technology'),(3,'sadfg','daddyisking','sdfgh','$5$rounds=535000$2GOqind3qSa3U8mj$/8oEkii9s00PLPGhom5nmKqdreOmxD3UoiVRW4l2ys9','Business,Science,Technology'),(4,'sdfg','daddyisdaddy','sdfg','$5$rounds=535000$KT76ykWatRSa1RQZ$ehK6PQnxQemu6y46ve5iCNHB2VOvS.x9fno/vCyxhQ7','Health,Science,Technology'),(5,'sadfvb','daddyispapa','sdfghj','$5$rounds=535000$zLiv07fnM8u4O0cx$0m3LmtlifJzfPWlS0dXe.r7I8fOwq7agVVf93wcIpr7','Business,Health');
 /*!40000 ALTER TABLE `userInfo` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -348,4 +321,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-04-13  5:02:24
+-- Dump completed on 2018-04-17 14:20:11

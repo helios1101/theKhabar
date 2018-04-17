@@ -113,8 +113,22 @@
 {% block body %}
 <div class="jumbotron text-center" style="margin: 20px">
     <h1>Welcome to the KHABAR</h1>
+
     {% include 'includes/_messages.html' %}
+    
+ <div class="tap-target teal lighten-3" data-activates="mybtn" style="z-index: 1000">
+    <div class="tap-target-content">
+      <h5>Available: 24/7</h5>
+      <p>Call us now to speak with someone about your matter.</p>
+      <a href="#!" onclick="$('.tap-target').tapTarget('close')">Dismiss</a>
     </div>
+  </div>
+  <script type="text/javascript">
+     $(document).ready(function(){
+  $('.tap-target').tapTarget('open');
+});
+  </script>
+  </div>
 <div style="background-color: black; padding:20px">
   {% for news_row in homenews|batch(2) %}
 <div class="row">

@@ -699,8 +699,9 @@ def healthPage():
 @app.route('/search',methods = ['GET','POST'])
 def search():
 	if request.method == 'POST':
-		keyword = request.form.get('keyword',None)
-		return result(keyword)
+		if 'search' in request.form:
+			keyword = request.form.get('keyword',None)
+			return result(keyword)
 	if loggedin==False:
 		return render_template('search.html')
 	else:

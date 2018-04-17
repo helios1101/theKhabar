@@ -14,14 +14,14 @@
       <div class="card">
         <div class="card-image">
           <img src="{{news['image']}}">
-          <form method = "POST", action="">
+          <!-- <form method = "POST", action="">
               <input type = "text" name = "title" value = "{{news.title}}" style="display: none">
               <input type = "text" name = "username" value = "{{un}}" id = "username" style="display: none">
               <button class="btn-floating halfway-fab waves-effect waves-light blue" type="submit" name="Like" value = "Like" action ="Like">
                 <i class="material-icons">thumb_up</i>
               </button>       
               
-            </form>
+            </form> -->
           </div>
           <div class="card-content">
             <p>
@@ -44,7 +44,7 @@
               <div class="modal-content">
                 <h4>{{news['title']}}</h4>
                 <p>{{news['summary']}}</p>
-                <form method = 'POST' action="">
+                <!-- <form method = 'POST' action="">
                   <input type = "text" name = "username" value = "{{un}}" style="display: none">
                   <input type = "text" name = "title" value = "{{news['title']}}" style="display: none">
                   <label style="color: black; font-size: 15px;">Comment</label>
@@ -52,7 +52,7 @@
                   <button class="btn-floating waves-effect waves-light blue" type="submit" name="Comments" >
                     <i class="material-icons">create</i>
                   </button>         
-                </form>
+                </form> -->
                 <!-- <ul class="collection">
                   {% for i in views %}
                   {%- if news['title'] in i.values() %}
