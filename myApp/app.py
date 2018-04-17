@@ -867,7 +867,7 @@ def result(keywords):
 		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 		views = cur.fetchall()
 		cur.close()
-		return render_template('result_user.html',results = total,keyword =keywords,name=un,likes=likes,views=views)			
+		return render_template('result_user.html',results = total,keyword =keywords,name=un,likes=likes,views=views)
 
 
 if __name__=='__main__':
