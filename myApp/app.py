@@ -16,7 +16,7 @@ from models import *
 from flask_sqlalchemy import SQLAlchemy
 from random import shuffle
 loggedin=False
-
+ad_loggedin=False
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:#Neel1998@localhost/NEWS'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True 
@@ -104,7 +104,59 @@ def register():
 			db.session.commit()
 			return redirect(url_for('login'))
 	return render_template('register.html',form=form)
-
+class AdminForm(Form):
+	key="123"
+	name=StringField('Name',[validators.Length(min=1,max=50)])
+	username=StringField('Username',[validators.Length(min=4,max=50)])
+	email=StringField('Email',[validators.Length(min=4,max=50)])
+	password=PasswordField('Password',[
+		validators.DataRequired(),
+		validators.EqualTo('confirm',message='Passwords do not match')
+		])
+	confirm=PasswordField('Confirm Password')
+	ad_key=PasswordField('adminKey',[
+		validators.DataRequired(),
+		validators.Regexp("123",flags=0,message='AdminKey does not match')
+		])
+@app.route('/register_admin',methods=['GET','POST'])
+def register_admin():
+	setGeneral = set()
+	listGeneral = []
+	instGeneral = """select * from General order by date DESC"""
+	newsCursor.execute(instGeneral)
+	general = newsCursor.fetchall()
+	x=0
+	for title in general:
+		if title['title'] in setGeneral:
+			pass 
+		else:
+			setGeneral.add(title['title'])
+			if x<5:
+				listGeneral.append(title)
+				x+=1
+	form = AdminForm(request.form)
+	if request.method=='POST' and form.validate():
+		name=request.form['name']
+		email=request.form['email']
+		usern=request.form['username']
+		order =[]
+		orderlist = ['Sports','Entertainment','General','Business','Health','Science','Technology']
+		for category in orderlist:
+			if request.form.get(category):
+				order.append(category)
+		
+		order = ','.join(order)
+		password=sha256_crypt.encrypt(str(request.form['password']))
+		check=admin.query.filter_by(username=usern).first()
+		if(check is not None):
+			flash("USERNAME ALREADY TAKEN")
+			return render_template('admin_register.html',form=form)
+		else:
+			newadmin=admin(name,usern,email,password,order)
+			db.session.add(newadmin)
+			db.session.commit()
+			return redirect(url_for('login_admin'))
+	return render_template('admin_register.html',form=form)
 
 @app.route('/login',methods=['GET','POST'])
 def login():
@@ -144,6 +196,44 @@ def login():
 			flash("AUTHENTICATION FAILED")
 			return render_template('login.html')
 	return render_template('login.html')
+@app.route('/login_admin',methods=['GET','POST'])
+def login_admin():
+	setGeneral = set()
+	listGeneral = []
+	instGeneral = """select * from General order by date DESC"""
+	newsCursor.execute(instGeneral)
+	general = newsCursor.fetchall()
+	x=0
+	for title in general:
+		if title['title'] in setGeneral:
+			pass 
+		else:
+			setGeneral.add(title['title'])
+			if x<5:
+				listGeneral.append(title)
+				x+=1
+	db.session.commit()
+	if request.method=='POST':
+		usern1=request.form['username']
+		password_candidate=request.form['password']
+		cur=mysql.connection.cursor()
+		result=cur.execute("SELECT * FROM Admin WHERE username=%s",[usern1])
+		if result >0:
+				data=cur.fetchone()
+				password=data['password']
+				if sha256_crypt.verify(password_candidate,password):
+					global un
+					un=usern1
+					global ad_loggedin
+					ad_loggedin=True
+					return redirect(url_for('admin_home'))
+				else:
+					flash("AUTHENTICATION FAILED")
+					return render_template('login_admin.html')	
+		else:
+			flash("AUTHENTICATION FAILED")
+			return render_template('login_admin.html')
+	return render_template('login_admin.html')
 @app.route('/logout')
 def logout():
 	session.clear()
@@ -246,6 +336,101 @@ def user_home():
 	cur.close()
 	shuffle(listNews)
 	return render_template('user_home.html',name=un,homenews=listNews)
+@app.route('/admin_home')
+def admin_home():
+	cur=mysql.connection.cursor()
+	us=cur.execute("SELECT * FROM Admin WHERE username=%s",[un])
+	order=cur.fetchone()['order']
+	cur.close()
+	cur=mysql.connection.cursor()
+	order = order.split(',')
+	setNews = set()
+	listNews=[]
+	if 'Sports' in order:
+		cur.execute("""SELECT * FROM Sports """)
+		news = cur.fetchall()
+		count=0
+		for title in news:
+			if title['title'] in setNews:
+				pass
+			else:
+				setNews.add(title['title'])
+				listNews.append(title)
+
+	if 'Entertainment' in order:
+		cur.execute("""SELECT * FROM Entertainment """)
+		news = cur.fetchall()
+		count=0
+		for title in news:
+			if title['title'] in setNews:
+				pass
+			else:
+				setNews.add(title['title'])
+				listNews.append(title)
+				
+	if 'Health' in order:
+		cur.execute("""SELECT * FROM Health """)
+		news = cur.fetchall()
+		count=0
+		for title in news:
+			if title['title'] in setNews:
+				pass
+			
+			else:
+				setNews.add(title['title'])
+				listNews.append(title)
+				
+	if 'Business' in order:
+		cur.execute("""SELECT * FROM Business """)
+		news = cur.fetchall()
+		
+		for title in news:
+			if title['title'] in setNews:
+				pass
+			else:
+				setNews.add(title['title'])
+				listNews.append(title)
+				
+	if 'General' in order:
+		cur.execute("""SELECT * FROM General """)
+		news = cur.fetchall()
+		count=0
+		for title in news:
+			if title['title'] in setNews:
+				pass
+			
+			else:
+				setNews.add(title['title'])
+				listNews.append(title)
+				
+	if 'Science' in order:
+		cur.execute("""SELECT * FROM Science """)
+		news = cur.fetchall()
+		count=0
+		for title in news:
+			if title['title'] in setNews:
+				pass
+			
+			else:
+				setNews.add(title['title'])
+				listNews.append(title)
+				
+	if 'Technology' in order:
+		cur.execute("""SELECT * FROM Technology """)
+		news = cur.fetchall()
+		count=0
+		for title in news:
+			if title['title'] in setNews:
+				pass
+			if count>2:
+				break
+			else:
+				setNews.add(title['title'])
+				listNews.append(title)
+				count = count+1
+	cur.close()
+	shuffle(listNews)
+	return render_template('admin_home.html',name=un,homenews=listNews)
 @app.route('/change',methods=['GET','POST'])
 def change():
 	if request.method=='POST':
@@ -703,11 +888,82 @@ def add():
 		summary=request.form['summary']
 		description=request.form['description']
 		date=request.form['date']
+		k1=request.form['k1']
+		k2=request.form['k2']
+		k3=request.form['k3']
+		url=request.form['url']
+		urlimg=request.form['urlimg']
 		if category.lower()=="sports":
-			s=Sports(title,author,date,summary,"",description,"","")
+			s=Sports(title,author,date,summary,url,description,urlimg,k1)
 			db.session.add(s)
 			db.session.commit()
-		return render_template('addArticle.html')
+			s=Sports(title,author,date,summary,url,description,urlimg,k2)
+			db.session.add(s)
+			db.session.commit()
+			s=Sports(title,author,date,summary,url,description,urlimg,k3)
+			db.session.add(s)
+			db.session.commit()
+		elif category.lower()=="general":
+			s=General(title,author,date,summary,url,description,urlimg,k1)
+			db.session.add(s)
+			db.session.commit()
+			s=General(title,author,date,summary,url,description,urlimg,k2)
+			db.session.add(s)
+			db.session.commit()
+			s=General(title,author,date,summary,url,description,urlimg,k3)
+			db.session.add(s)
+			db.session.commit()
+		elif category.lower()=="business":
+			s=Business(title,author,date,summary,url,description,urlimg,k1)
+			db.session.add(s)
+			db.session.commit()
+			s=Business(title,author,date,summary,url,description,urlimg,k2)
+			db.session.add(s)
+			db.session.commit()
+			s=Business(title,author,date,summary,url,description,urlimg,k3)
+			db.session.add(s)
+			db.session.commit()
+		elif category.lower()=="health":
+			s=Health(title,author,date,summary,url,description,urlimg,k1)
+			db.session.add(s)
+			db.session.commit()
+			s=Health(title,author,date,summary,url,description,urlimg,k2)
+			db.session.add(s)
+			db.session.commit()
+			s=Health(title,author,date,summary,url,description,urlimg,k3)
+			db.session.add(s)
+			db.session.commit()
+		elif category.lower()=="technology":
+			s=Technology(title,author,date,summary,url,description,urlimg,k1)
+			db.session.add(s)
+			db.session.commit()
+			s=Technology(title,author,date,summary,url,description,urlimg,k2)
+			db.session.add(s)
+			db.session.commit()
+			s=Technology(title,author,date,summary,url,description,urlimg,k3)
+			db.session.add(s)
+			db.session.commit()
+		elif category.lower()=="science":
+			s=Science(title,author,date,summary,url,description,urlimg,k1)
+			db.session.add(s)
+			db.session.commit()
+			s=Science(title,author,date,summary,url,description,urlimg,k2)
+			db.session.add(s)
+			db.session.commit()
+			s=Science(title,author,date,summary,url,description,urlimg,k3)
+			db.session.add(s)
+			db.session.commit()
+		elif category.lower()=="entertainment":
+			s=Entertainment(title,author,date,summary,url,description,urlimg,k1)
+			db.session.add(s)
+			db.session.commit()
+			s=Entertainment(title,author,date,summary,url,description,urlimg,k2)
+			db.session.add(s)
+			db.session.commit()
+			s=Entertainment(title,author,date,summary,url,description,urlimg,k3)
+			db.session.add(s)
+			db.session.commit()
+		return render_template('admin_home.html')
 	return render_template('addArticle.html')
 
 @app.route('/search',methods = ['GET','POST'])
