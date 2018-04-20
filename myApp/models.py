@@ -30,7 +30,20 @@ class user(db.Model):
 		self.password=password
 		self.email=email
 		self.order=order
-
+class admin(db.Model):
+	__tablename__="Admin"
+	uid= db.Column(db.Integer,primary_key=True)
+	name= db.Column(db.String(length=300),nullable=True)
+	username= db.Column(db.String(length=300),nullable=True)
+	email= db.Column(db.String(length=300),nullable=True)
+	password= db.Column(db.String(length=300),nullable=True)
+	order = db.Column(db.String(length =300),nullable = False)
+	def __init__(self,name,username,email,password,order):
+		self.name=name
+		self.username=username
+		self.password=password
+		self.email=email
+		self.order=order
 
 class Likes(db.Model):
 
