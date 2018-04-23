@@ -15,6 +15,7 @@ from passlib.hash import sha256_crypt
 from models import *
 from flask_sqlalchemy import SQLAlchemy
 from random import shuffle
+from forms import *
 loggedin=False
 ad_loggedin=False
 app = Flask(__name__)
@@ -56,15 +57,7 @@ def index():
 @app.route('/credits')
 def credits():
 	return render_template('about.html')
-class RegisterForm(Form):
-	name=StringField('Name',[validators.Length(min=1,max=50)])
-	username=StringField('Username',[validators.Length(min=4,max=50)])
-	email=StringField('Email',[validators.Length(min=4,max=50)])
-	password=PasswordField('Password',[
-		validators.DataRequired(),
-		validators.EqualTo('confirm',message='Passwords do not match')
-		])
-	confirm=PasswordField('Confirm Password')
+
 @app.route('/register',methods=['GET','POST'])
 def register():
 	setGeneral = set()
@@ -104,20 +97,9 @@ def register():
 			db.session.commit()
 			return redirect(url_for('login'))
 	return render_template('register.html',form=form)
-class AdminForm(Form):
-	key="123"
-	name=StringField('Name',[validators.Length(min=1,max=50)])
-	username=StringField('Username',[validators.Length(min=4,max=50)])
-	email=StringField('Email',[validators.Length(min=4,max=50)])
-	password=PasswordField('Password',[
-		validators.DataRequired(),
-		validators.EqualTo('confirm',message='Passwords do not match')
-		])
-	confirm=PasswordField('Confirm Password')
-	ad_key=PasswordField('adminKey',[
-		validators.DataRequired(),
-		validators.Regexp("123",flags=0,message='AdminKey does not match')
-		])
+
+
+
 @app.route('/register_admin',methods=['GET','POST'])
 def register_admin():
 	setGeneral = set()
@@ -347,7 +329,9 @@ def admin_home():
 	setNews = set()
 	listNews=[]
 	if 'Sports' in order:
-		cur.execute("""SELECT * FROM Sports """)
+		p='Sports'
+		command = """SELECT * FROM Sports"""
+		cur.execute(command)
 		news = cur.fetchall()
 		count=0
 		for title in news:
@@ -495,21 +479,12 @@ def sportPage():
 				title = request.form['title']
 				userName = un
 				cur=mysql.connection.cursor()
-				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
+				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s and user = %s""",[title,userName])
 				if temp<=0:
 					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
-				else:
-					cur.execute("""SELECT user FROM Likes WHERE news= %s """,[title])
-					likes = cur.fetchall()
-					for i in likes:
-						if userName in i.values():
-							pass
-						else:
-							new = Likes(title,userName,1)
-							db.session.add(new)
-							db.session.commit()
+			
 			if 'Comments' in request.form:
 				username = un
 				title = request.form['title']
@@ -555,21 +530,12 @@ def generalPage():
 				title = request.form['title']
 				userName = un
 				cur=mysql.connection.cursor()
-				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
+				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s and user = %s""",[title,userName])
 				if temp<=0:
 					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
-				else:
-					cur.execute("""SELECT user FROM Likes WHERE news= %s """,[title])
-					likes = cur.fetchall()
-					for i in likes:
-						if userName in i.values():
-							pass
-						else:
-							new = Likes(title,userName,1)
-							db.session.add(new)
-							db.session.commit()
+			
 			if 'Comments' in request.form:
 				username = un
 				title = request.form['title']
@@ -613,21 +579,11 @@ def entertainmentPage():
 				title = request.form['title']
 				userName = un
 				cur=mysql.connection.cursor()
-				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
+				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s and user = %s""",[title,userName])
 				if temp<=0:
 					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
-				else:
-					cur.execute("""SELECT user FROM Likes WHERE news= %s """,[title])
-					likes = cur.fetchall()
-					for i in likes:
-						if userName in i.values():
-							pass
-						else:
-							new = Likes(title,userName,1)
-							db.session.add(new)
-							db.session.commit()
 			if 'Comments' in request.form:
 				username = un
 				title = request.form['title']
@@ -671,21 +627,11 @@ def technologyPage():
 				title = request.form['title']
 				userName = un
 				cur=mysql.connection.cursor()
-				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
+				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s and user = %s""",[title,userName])
 				if temp<=0:
 					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
-				else:
-					cur.execute("""SELECT user FROM Likes WHERE news= %s """,[title])
-					likes = cur.fetchall()
-					for i in likes:
-						if userName in i.values():
-							pass
-						else:
-							new = Likes(title,userName,1)
-							db.session.add(new)
-							db.session.commit()
 			if 'Comments' in request.form:
 				username = un
 				title = request.form['title']
@@ -729,21 +675,11 @@ def sciencePage():
 				title = request.form['title']
 				userName = un
 				cur=mysql.connection.cursor()
-				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
+				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s and user = %s""",[title,userName])
 				if temp<=0:
 					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
-				else:
-					cur.execute("""SELECT user FROM Likes WHERE news= %s """,[title])
-					likes = cur.fetchall()
-					for i in likes:
-						if userName in i.values():
-							pass
-						else:
-							new = Likes(title,userName,1)
-							db.session.add(new)
-							db.session.commit()
 			if 'Comments' in request.form:
 				username = un
 				title = request.form['title']
@@ -787,21 +723,11 @@ def businessPage():
 				title = request.form['title']
 				userName = un
 				cur=mysql.connection.cursor()
-				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
+				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s and user = %s""",[title,userName])
 				if temp<=0:
 					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
-				else:
-					cur.execute("""SELECT user FROM Likes WHERE news= %s """,[title])
-					likes = cur.fetchall()
-					for i in likes:
-						if userName in i.values():
-							pass
-						else:
-							new = Likes(title,userName,1)
-							db.session.add(new)
-							db.session.commit()
 			if 'Comments' in request.form:
 				username = un
 				title = request.form['title']
@@ -845,21 +771,11 @@ def healthPage():
 				title = request.form['title']
 				userName = un
 				cur=mysql.connection.cursor()
-				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
+				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s and user = %s""",[title,userName])
 				if temp<=0:
 					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
-				else:
-					cur.execute("""SELECT user FROM Likes WHERE news= %s """,[title])
-					likes = cur.fetchall()
-					for i in likes:
-						if userName in i.values():
-							pass
-						else:
-							new = Likes(title,userName,1)
-							db.session.add(new)
-							db.session.commit()
 			if 'Comments' in request.form:
 				username = un
 				title = request.form['title']
@@ -894,91 +810,54 @@ def add():
 		url=request.form['url']
 		urlimg=request.form['urlimg']
 		if category.lower()=="sports":
-			s=Sports(title,author,date,summary,url,description,urlimg,k1)
-			db.session.add(s)
-			db.session.commit()
-			s=Sports(title,author,date,summary,url,description,urlimg,k2)
-			db.session.add(s)
-			db.session.commit()
-			s=Sports(title,author,date,summary,url,description,urlimg,k3)
-			db.session.add(s)
-			db.session.commit()
+			for i in k1,k2,k3:
+				s=Sports(title,author,date,summary,url,description,urlimg,i)
+				db.session.add(s)
+				db.session.commit()
 		elif category.lower()=="general":
-			s=General(title,author,date,summary,url,description,urlimg,k1)
-			db.session.add(s)
-			db.session.commit()
-			s=General(title,author,date,summary,url,description,urlimg,k2)
-			db.session.add(s)
-			db.session.commit()
-			s=General(title,author,date,summary,url,description,urlimg,k3)
-			db.session.add(s)
-			db.session.commit()
+			for i in k1,k2,k3:
+				s=General(title,author,date,summary,url,description,urlimg,i)
+				db.session.add(s)
+				db.session.commit()
 		elif category.lower()=="business":
-			s=Business(title,author,date,summary,url,description,urlimg,k1)
-			db.session.add(s)
-			db.session.commit()
-			s=Business(title,author,date,summary,url,description,urlimg,k2)
-			db.session.add(s)
-			db.session.commit()
-			s=Business(title,author,date,summary,url,description,urlimg,k3)
-			db.session.add(s)
-			db.session.commit()
+			for i in k1,k2,k3:
+				s=Business(title,author,date,summary,url,description,urlimg,i)
+				db.session.add(s)
+				db.session.commit()
 		elif category.lower()=="health":
-			s=Health(title,author,date,summary,url,description,urlimg,k1)
-			db.session.add(s)
-			db.session.commit()
-			s=Health(title,author,date,summary,url,description,urlimg,k2)
-			db.session.add(s)
-			db.session.commit()
-			s=Health(title,author,date,summary,url,description,urlimg,k3)
-			db.session.add(s)
-			db.session.commit()
+			for i in k1,k2,k3:
+				s=Health(title,author,date,summary,url,description,urlimg,i)
+				db.session.add(s)
+				db.session.commit()
 		elif category.lower()=="technology":
-			s=Technology(title,author,date,summary,url,description,urlimg,k1)
-			db.session.add(s)
-			db.session.commit()
-			s=Technology(title,author,date,summary,url,description,urlimg,k2)
-			db.session.add(s)
-			db.session.commit()
-			s=Technology(title,author,date,summary,url,description,urlimg,k3)
-			db.session.add(s)
-			db.session.commit()
+			for i in k1,k2,k3:
+				s=Technology(title,author,date,summary,url,description,urlimg,i)
+				db.session.add(s)
+				db.session.commit()
 		elif category.lower()=="science":
-			s=Science(title,author,date,summary,url,description,urlimg,k1)
-			db.session.add(s)
-			db.session.commit()
-			s=Science(title,author,date,summary,url,description,urlimg,k2)
-			db.session.add(s)
-			db.session.commit()
-			s=Science(title,author,date,summary,url,description,urlimg,k3)
-			db.session.add(s)
-			db.session.commit()
+			for i in k1,k2,k3:
+				s=Science(title,author,date,summary,url,description,urlimg,i)
+				db.session.add(s)
+				db.session.commit()
 		elif category.lower()=="entertainment":
-			s=Entertainment(title,author,date,summary,url,description,urlimg,k1)
-			db.session.add(s)
-			db.session.commit()
-			s=Entertainment(title,author,date,summary,url,description,urlimg,k2)
-			db.session.add(s)
-			db.session.commit()
-			s=Entertainment(title,author,date,summary,url,description,urlimg,k3)
-			db.session.add(s)
-			db.session.commit()
+			for i in k1,k2,k3:
+				s=Entertainment(title,author,date,summary,url,description,urlimg,i)
+				db.session.add(s)
+				db.session.commit()
 		return render_template('admin_home.html')
 	return render_template('addArticle.html')
 
 @app.route('/search',methods = ['GET','POST'])
 def search():
 	if request.method == 'POST':
-		if 'search' in request.form:
-			keyword = request.form.get('keyword',None)
-			return result(keyword)
+		keyword = request.form.get('keyword',None)
+		return redirect(url_for('result',keywords=keyword))
 	if loggedin==False:
 		return render_template('search.html')
 	else:
-
 		return render_template('search_user.html',name=un)		
 
-@app.route('/search/<keywords>')
+@app.route('/search/<keywords>',methods = ['GET','POST'])
 def result(keywords):
 	tables = ['General','Sports','Entertainment','Technology','Science']
 	totalSet = set()
@@ -987,6 +866,7 @@ def result(keywords):
 	flag=0
 	temp=newsCursor.execute("""SELECT * FROM Sports WHERE keyword= %s """,[keywords])
 	complete = newsCursor.fetchall()
+	print(complete)
 	if temp <=0:
 		pass
 	else:	
@@ -1094,40 +974,24 @@ def result(keywords):
 		return render_template('results.html',results=total,keyword=keywords,views=views)
 	else:
 		if request.method == 'POST':
-			title = request.form['title']
-			cur=mysql.connection.cursor()
-			temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
-			if temp<=0:
-				new = Likes(title,1)
-				db.session.add(new)
-				db.session.commit()
-			else:
-				if 'Like' in request.form:
-					title = request.form['title']
-					userName = un
-					cur=mysql.connection.cursor()
-					temp=cur.execute("""SELECT * FROM Likes WHERE news= %s """,[title])
-					if temp<=0:
-						new = Likes(title,userName,1)
-						db.session.add(new)
-						db.session.commit()
-					else:
-						cur.execute("""SELECT user FROM Likes WHERE news= %s """,[title])
-						likes = cur.fetchall()
-						for i in likes:
-							if userName in i.values():
-								pass
-							else:
-								new = Likes(title,userName,1)
-								db.session.add(new)
-								db.session.commit()
-				if 'Comments' in request.form:
-					username = un
-					title = request.form['title']
-					comments = request.form['comment']
-					new = Views(title,username,comments)
+			if 'Like' in request.form:
+				title = request.form['title']
+				userName = un
+				cur=mysql.connection.cursor()
+				temp=cur.execute("""SELECT * FROM Likes WHERE news= %s and user = %s""",[title,userName])
+				if temp<=0:
+					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
+			if 'Comments' in request.form:
+				username = un
+				title = request.form['title']
+				comments = request.form['comment']
+				new = Views(title,username,comments)
+				db.session.add(new)
+				db.session.commit()
+			
+
 
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
