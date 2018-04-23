@@ -54,6 +54,7 @@ def index():
 				listGeneral.append(title)
 				x+=1
 	return render_template('home.html',homenews=listGeneral)
+
 @app.route('/credits')
 def credits():
 	return render_template('about.html')
@@ -221,8 +222,11 @@ def logout():
 	session.clear()
 	global loggedin
 	loggedin=False
+	global ad_loggedin
+	ad_loggedin = False
 	flash("Successfully logged out")
 	return redirect(url_for('index'))
+
 @app.route('/user_home')
 def user_home():
 	cur=mysql.connection.cursor()
@@ -317,7 +321,8 @@ def user_home():
 				count = count+1
 	cur.close()
 	shuffle(listNews)
-	return render_template('user_home.html',name=un,homenews=listNews)
+	return render_template('try_home.html',name=un,homenews=listNews,userloggedin=loggedin)
+
 @app.route('/admin_home')
 def admin_home():
 	cur=mysql.connection.cursor()
@@ -414,7 +419,8 @@ def admin_home():
 				count = count+1
 	cur.close()
 	shuffle(listNews)
-	return render_template('admin_home.html',name=un,homenews=listNews)
+	return render_template('try_home.html',name=un,homenews=listNews,adminloggedin=ad_loggedin)
+
 @app.route('/change',methods=['GET','POST'])
 def change():
 	if request.method=='POST':
@@ -427,12 +433,12 @@ def change():
 			cur.execute("UPDATE userInfo SET password=%s WHERE username=%s",[new_p,un])
 			mysql.connection.commit()
 			cur.close()
-			#news.commit()
 			return render_template('user_home.html',name=un)
 		else:
 			flash("OLD PASSWORD DOENT MATCH!!")
 			return render_template('change.html',name=un)
 	return render_template('change.html',name=un)
+
 @app.route('/change_user',methods=['GET','POST'])
 def change_user():
 	if request.method=='POST':
@@ -453,6 +459,7 @@ def change_user():
 		   	flash("PASSWORD DOENT MATCH!!")
 		   	return render_template('change_user.html',name=un)
 	return render_template('change_user.html',name=un)
+
 @app.route('/sports',methods=['GET','POST'])
 def sportPage():
 	setSports = set()
@@ -501,7 +508,11 @@ def sportPage():
 		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 		views = cur.fetchall()
 		cur.close()
-		return render_template('sports_user.html',sports = listSports,name=un,likes=likes,views=views)
+		cur=mysql.connection.cursor()
+		temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
+		liked = cur.fetchall()
+		cur.close()
+		return render_template('sports_user.html',sports = listSports,name=un,likes=likes,views=views,liked=liked)
 	
 
 
@@ -866,7 +877,6 @@ def result(keywords):
 	flag=0
 	temp=newsCursor.execute("""SELECT * FROM Sports WHERE keyword= %s """,[keywords])
 	complete = newsCursor.fetchall()
-	print(complete)
 	if temp <=0:
 		pass
 	else:	
