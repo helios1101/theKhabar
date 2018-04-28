@@ -4,8 +4,10 @@ Authors : Pulkit Gera
 Lets hope we finish it in time.
 WE ARE MAKING NEWS APP	
 Problems with the app:
-1) The search function has stopped working (solved)
-2) Fields are not logged in when working with admin_login
-3) UI not consistent
+1) Non logged in picture not available at side nav in search querry
+2) Black thing to be removed 
+3) above navbar could be improved, UI beautification 
 4) Code quality to be improved massively
-5) Documentation to be added 
+5) Documentation to be added
+6) logging out during credits
+7) Delete articles for admin(ask)

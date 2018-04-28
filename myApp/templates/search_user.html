@@ -1,4 +1,11 @@
-{% extends 'layout_user.html' %}
+{% extends 'layout_logged.html' %}
+{% block nav %}
+{% if adminloggedin %}
+{% include 'includes/_navbar_admin.html' %}
+{% else %}
+{% include 'includes/_navbar_user.html' %}
+{% endif %}
+{% endblock %}
 {% block body %}
 <div style="margin: 20px;background-color: white;padding: 20px; opacity: 0.8; color:black;">
 <h1>SEARCH</h1>

@@ -1,51 +1,47 @@
-{% extends 'layout_user.html' %}
+{% extends 'try.html' %}
+{% block nav %}
+{% if adminloggedin %}
+{% include 'includes/_navbar_admin.html' %}
+{% else %}
+{% include 'includes/_navbar_user.html' %}
+{% endif %}
+{% endblock %}
 {% block body %}
 <div style="background-color: black; padding:20px">
-{% for news_row in sports|batch(2) %}
+  {% for news_row in sports|batch(2) %}
 <div class="row">
   {%for news in news_row%}
   <div class="col s1">
-    <div class="row">
-      <div class="col s12 m7">
-        <div class="card">
-          <div class="card-image">
-            <img src="{{news['image']}}"
-            onerror="this.onerror=null;this.src='https://i0.wp.com/www.insidesport.co/wp-content/uploads/2017/05/Leed-Story-5.jpg?fit=1068%2C713&ssl=1';">
-
-            <form method = "POST", action="">
+  <div class="row">
+    <div class="col s12 m7">
+      <div class="card">
+        <div class="card-image">
+          <img src="{{news['image']}}" 
+          onerror="this.src='https://upload.wikimedia.org/wikipedia/en/thumb/4/41/Flag_of_India.svg/1200px-Flag_of_India.svg.png';">
+          <form method = "POST", action="">
               <input type = "text" name = "title" value = "{{news.title}}" style="display: none">
               <input type = "text" name = "username" value = "{{un}}" id = "username" style="display: none">
-              {% for i in liked %}
-              {%- if name in i.values()  and %}
-              <button class="btn-floating halfway-fab waves-effect waves-light red" type="submit" name="Like" value = "Like" action ="Like">
-                <i class="material-icons">thumb_up</i>
-              </button>       
-              {% else %}
               <button class="btn-floating halfway-fab waves-effect waves-light blue" type="submit" name="Like" value = "Like" action ="Like">
                 <i class="material-icons">thumb_up</i>
-              </button>
-              {% endif %}
-              {% endfor %} 
+              </button>       
+              
             </form>
-            
           </div>
           <div class="card-content">
-            <span class="card-title">{{news['title']}}</span>
             <p>
-
+              <span class="card-title"><u>{{news['title']}}</u></span>
               <b>
-                {% for i in likes  %}
-                {%- if news.title in i.values() %}
-                {{i['count(likes)']}} people liked it.
-                {% endif %}
-                {% endfor %}
-              </b> 
+              {% for i in likes  %}
+              {%- if news.title in i.values() %}
+              {{i['count(likes)']}} people liked it.
+              {{break}}
+              {% endif %}
+              {% endfor %}
+              </b>
             </p>
-            <p>
-              {{news['description']}}
-            </p>
+            {{news['description']}}
           </div>
-          <div class="card-action">
+        <div class="card-action">
             <a href="{{news['url']}}">Go To Site</a>
             <button data-target="modal{{sports.index(news)}}" class="btn modal-trigger">Read more</button>
             <div id="modal{{sports.index(news)}}" class="modal modal-fixed-footer">
@@ -53,11 +49,11 @@
                 <h4>{{news['title']}}</h4>
                 <p>{{news['summary']}}</p>
                 <form method = 'POST' action="">
-                  <input type = "text" name = "username" value = "{{un}}" id = "username" style="display: none">
-                  <input type = "text" name = "title" value = "{{news['title']}}" id ="title" style="display: none">
+                  <input type = "text" name = "username" value = "{{un}}" style="display: none">
+                  <input type = "text" name = "title" value = "{{news['title']}}" style="display: none">
                   <label style="color: black; font-size: 15px;">Comment</label>
-                  <input type="text" name="comment" id ="comment">
-                  <button class="btn-floating waves-effect waves-light blue " id ="random" type="submit" name="Comments" >
+                  <input type="text" name="comment" >
+                  <button class="btn-floating waves-effect waves-light blue" type="submit" name="Comments" >
                     <i class="material-icons">create</i>
                   </button>         
                 </form>
@@ -93,12 +89,13 @@
                </div>
              </div>
            </div>
-         </div>
-       </div>
-     </div>
-   </div>
-   {%endfor%}
- </div>
- {% endfor %}
+      </div>
+    </div>
+  </div>
 </div>
- {% endblock %}
+{%endfor%}
+</div>
+{% endfor %}
+</div>
+
+{% endblock %}

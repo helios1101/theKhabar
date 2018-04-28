@@ -1,4 +1,11 @@
-{% extends 'layout_user.html' %}
+{% extends 'try.html' %}
+{% block nav %}
+{% if adminloggedin %}
+{% include 'includes/_navbar_admin.html' %}
+{% else %}
+{% include 'includes/_navbar_user.html' %}
+{% endif %}
+{% endblock %}
 {% block body %}
 <div style="background-color: black; padding:20px">
   {% for news_row in general|batch(2) %}

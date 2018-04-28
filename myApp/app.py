@@ -99,8 +99,6 @@ def register():
 			return redirect(url_for('login'))
 	return render_template('register.html',form=form)
 
-
-
 @app.route('/register_admin',methods=['GET','POST'])
 def register_admin():
 	setGeneral = set()
@@ -179,8 +177,11 @@ def login():
 			flash("AUTHENTICATION FAILED")
 			return render_template('login.html')
 	return render_template('login.html')
+
 @app.route('/login_admin',methods=['GET','POST'])
 def login_admin():
+	global ad_loggedin
+	ad_loggedin=False
 	setGeneral = set()
 	listGeneral = []
 	instGeneral = """select * from General order by date DESC"""
@@ -217,6 +218,7 @@ def login_admin():
 			flash("AUTHENTICATION FAILED")
 			return render_template('login_admin.html')
 	return render_template('login_admin.html')
+
 @app.route('/logout')
 def logout():
 	session.clear()
@@ -227,7 +229,7 @@ def logout():
 	flash("Successfully logged out")
 	return redirect(url_for('index'))
 
-@app.route('/user_home')
+@app.route('/user_home',methods=['GET','POST'])
 def user_home():
 	cur=mysql.connection.cursor()
 	us=cur.execute("SELECT * FROM userInfo WHERE username=%s",[un])
@@ -313,17 +315,45 @@ def user_home():
 		for title in news:
 			if title['title'] in setNews:
 				pass
-			if count>2:
-				break
 			else:
 				setNews.add(title['title'])
 				listNews.append(title)
-				count = count+1
 	cur.close()
 	shuffle(listNews)
-	return render_template('try_home.html',name=un,homenews=listNews,userloggedin=loggedin)
+	if request.method == 'POST':
+		if 'Like' in request.form:
+			title = request.form['title']
+			userName = un
+			cur=mysql.connection.cursor()
+			temp=cur.execute("""SELECT * FROM Likes WHERE news= %s and user = %s""",[title,userName])
+			if temp<=0:
+				new = Likes(title,userName,1)
+				db.session.add(new)
+				db.session.commit()
+			
+		if 'Comments' in request.form:
+			username = un
+			title = request.form['title']
+			comments = request.form['comment']
+			new = Views(title,username,comments)
+			db.session.add(new)
+			db.session.commit()
 
-@app.route('/admin_home')
+	cur=mysql.connection.cursor()
+	temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
+	likes = cur.fetchall()
+	cur.close()
+	cur=mysql.connection.cursor()
+	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+	views = cur.fetchall()
+	cur.close()
+	cur=mysql.connection.cursor()
+	temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
+	liked = cur.fetchall()
+	cur.close()
+	return render_template('logged.html',name=un,homenews=listNews,userloggedin=loggedin,likes=likes,views=views,liked=liked)
+
+@app.route('/admin_home',methods = ['GET','POST'])
 def admin_home():
 	cur=mysql.connection.cursor()
 	us=cur.execute("SELECT * FROM Admin WHERE username=%s",[un])
@@ -411,15 +441,43 @@ def admin_home():
 		for title in news:
 			if title['title'] in setNews:
 				pass
-			if count>2:
-				break
 			else:
 				setNews.add(title['title'])
 				listNews.append(title)
-				count = count+1
 	cur.close()
 	shuffle(listNews)
-	return render_template('try_home.html',name=un,homenews=listNews,adminloggedin=ad_loggedin)
+	if request.method == 'POST':
+		if 'Like' in request.form:
+			title = request.form['title']
+			userName = un
+			cur=mysql.connection.cursor()
+			temp=cur.execute("""SELECT * FROM Likes WHERE news= %s and user = %s""",[title,userName])
+			if temp<=0:
+				new = Likes(title,userName,1)
+				db.session.add(new)
+				db.session.commit()
+			
+		if 'Comments' in request.form:
+			username = un
+			title = request.form['title']
+			comments = request.form['comment']
+			new = Views(title,username,comments)
+			db.session.add(new)
+			db.session.commit()
+
+	cur=mysql.connection.cursor()
+	temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
+	likes = cur.fetchall()
+	cur.close()
+	cur=mysql.connection.cursor()
+	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+	views = cur.fetchall()
+	cur.close()
+	cur=mysql.connection.cursor()
+	temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
+	liked = cur.fetchall()
+	cur.close()
+	return render_template('logged.html',name=un,homenews=listNews,adminloggedin=ad_loggedin,likes=likes,views=views,liked=liked)
 
 @app.route('/change',methods=['GET','POST'])
 def change():
@@ -477,8 +535,8 @@ def sportPage():
 	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 	views = cur.fetchall()
 	cur.close()
-	if loggedin==False:
-		return render_template('sports.html',sports = listSports,views=views)
+	if loggedin==False and ad_loggedin == False:
+		return render_template('news.html',khabar = listSports,views=views)
 	
 	else:
 		if request.method == 'POST':
@@ -503,16 +561,12 @@ def sportPage():
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
 		likes = cur.fetchall()
-		cur.close()
-		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 		views = cur.fetchall()
-		cur.close()
-		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
 		liked = cur.fetchall()
 		cur.close()
-		return render_template('sports_user.html',sports = listSports,name=un,likes=likes,views=views,liked=liked)
+		return render_template('news_user.html',khabar = listSports,name=un,likes=likes,views=views,liked=liked,loggedin=loggedin,adminloggedin=ad_loggedin)
 	
 
 
@@ -533,8 +587,8 @@ def generalPage():
 	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 	views = cur.fetchall()
 	cur.close()
-	if loggedin==False:
-		return render_template('general.html',general = listGeneral,views=views)
+	if loggedin==False and ad_loggedin == False:
+		return render_template('news.html',khabar = listGeneral,views=views)
 	else:
 		if request.method == 'POST':
 			if 'Like' in request.form:
@@ -558,12 +612,12 @@ def generalPage():
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
 		likes = cur.fetchall()
-		cur.close()
-		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 		views = cur.fetchall()
+		temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
+		liked = cur.fetchall()
 		cur.close()
-		return render_template('general_user.html',general = listGeneral,name=un,likes=likes,views=views)
+		return render_template('news_user.html',khabar = listGeneral,name=un,likes=likes,views=views,liked=liked,loggedin=loggedin,adminloggedin=ad_loggedin)
 
 @app.route('/entertainment',methods=['GET','POST'])
 def entertainmentPage():
@@ -582,8 +636,8 @@ def entertainmentPage():
 	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 	views = cur.fetchall()
 	cur.close()
-	if loggedin==False:
-		return render_template('entertainment.html',entertainment= listEntertainment,views=views)
+	if loggedin==False and ad_loggedin == False:
+		return render_template('news.html',khabar= listEntertainment,views=views)
 	else:
 		if request.method == 'POST':
 			if 'Like' in request.form:
@@ -606,12 +660,12 @@ def entertainmentPage():
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
 		likes = cur.fetchall()
-		cur.close()
-		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 		views = cur.fetchall()
+		temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
+		liked = cur.fetchall()
 		cur.close()
-		return render_template('entertainment_user.html',entertainment = listEntertainment,name=un,likes=likes,views=views)
+		return render_template('news_user.html',khabar = listEntertainment,name=un,likes=likes,views=views,liked=liked,loggedin=loggedin,adminloggedin=ad_loggedin)
 
 @app.route('/technology',methods=['GET','POST'])
 def technologyPage():
@@ -630,8 +684,8 @@ def technologyPage():
 	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 	views = cur.fetchall()
 	cur.close()
-	if loggedin==False:
-		return render_template('technology.html',technology = listTechnology,views=views)
+	if loggedin==False and ad_loggedin==False:
+		return render_template('news.html',khabar = listTechnology,views=views)
 	else:
 		if request.method == 'POST':
 			if 'Like' in request.form:
@@ -654,12 +708,12 @@ def technologyPage():
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
 		likes = cur.fetchall()
-		cur.close()
-		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 		views = cur.fetchall()
+		temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
+		liked = cur.fetchall()
 		cur.close()
-		return render_template('technology_user.html',technology = listTechnology,name=un,likes=likes,views=views)
+		return render_template('news_user.html',khabar = listTechnology,name=un,likes=likes,views=views,liked=liked,loggedin=loggedin,adminloggedin=ad_loggedin)
 
 @app.route('/science',methods=['GET','POST'])
 def sciencePage():
@@ -678,8 +732,8 @@ def sciencePage():
 	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 	views = cur.fetchall()
 	cur.close()
-	if loggedin==False:
-		return render_template('science.html',science = listScience,views=views)
+	if loggedin==False and ad_loggedin == False:
+		return render_template('news.html',khabar = listScience,views=views)
 	else:
 		if request.method == 'POST':
 			if 'Like' in request.form:
@@ -702,12 +756,12 @@ def sciencePage():
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
 		likes = cur.fetchall()
-		cur.close()
-		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 		views = cur.fetchall()
+		temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
+		liked = cur.fetchall()
 		cur.close()
-		return render_template('science_user.html',science = listScience,name=un,likes=likes,views=views)
+		return render_template('news_user.html',khabar = listScience,name=un,likes=likes,views=views,liked=liked,loggedin=loggedin,adminloggedin=ad_loggedin)
 
 @app.route('/business',methods=['GET','POST'])
 def businessPage():
@@ -726,8 +780,8 @@ def businessPage():
 	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 	views = cur.fetchall()
 	cur.close()
-	if loggedin==False:
-		return render_template('business.html',business = listBusiness,views=views)
+	if loggedin==False and ad_loggedin==False:
+		return render_template('news.html',khabar = listBusiness,views=views)
 	else:
 		if request.method == 'POST':
 			if 'Like' in request.form:
@@ -750,12 +804,12 @@ def businessPage():
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
 		likes = cur.fetchall()
-		cur.close()
-		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 		views = cur.fetchall()
+		temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
+		liked = cur.fetchall()
 		cur.close()
-		return render_template('business_user.html',business = listBusiness,name=un,likes=likes,views=views)
+		return render_template('news_user.html',khabar = listBusiness,name=un,likes=likes,views=views,liked=liked,loggedin=loggedin,adminloggedin=ad_loggedin)
 
 @app.route('/health',methods=['GET','POST'])
 def healthPage():
@@ -774,8 +828,8 @@ def healthPage():
 	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 	views = cur.fetchall()
 	cur.close()
-	if loggedin==False:
-		return render_template('health.html',health = listHealth,views=views)
+	if loggedin==False and ad_loggedin==False:
+		return render_template('news.html',khabar = listHealth,views=views)
 	else:
 		if request.method == 'POST':
 			if 'Like' in request.form:
@@ -798,12 +852,12 @@ def healthPage():
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
 		likes = cur.fetchall()
-		cur.close()
-		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 		views = cur.fetchall()
+		temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
+		liked = cur.fetchall()
 		cur.close()
-		return render_template('health_user.html',health= listHealth,name=un,likes=likes,views=views)
+		return render_template('news_user.html',khabar = listHealth,name=un,likes=likes,views=views,liked=liked,loggedin=loggedin,adminloggedin=ad_loggedin)
 
 
 @app.route('/add',methods=['GET','POST'])
@@ -863,10 +917,10 @@ def search():
 	if request.method == 'POST':
 		keyword = request.form.get('keyword',None)
 		return redirect(url_for('result',keywords=keyword))
-	if loggedin==False:
+	if loggedin==False and ad_loggedin == False:
 		return render_template('search.html')
 	else:
-		return render_template('search_user.html',name=un)		
+		return render_template('search_user.html',name=un,loggedin=loggedin,adminloggedin=ad_loggedin)		
 
 @app.route('/search/<keywords>',methods = ['GET','POST'])
 def result(keywords):
@@ -980,7 +1034,7 @@ def result(keywords):
 	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 	views = cur.fetchall()
 	cur.close()
-	if loggedin==False:
+	if loggedin==False and ad_loggedin==False:
 		return render_template('results.html',results=total,keyword=keywords,views=views)
 	else:
 		if request.method == 'POST':
@@ -1000,18 +1054,16 @@ def result(keywords):
 				new = Views(title,username,comments)
 				db.session.add(new)
 				db.session.commit()
-			
-
 
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
 		likes = cur.fetchall()
-		cur.close()
-		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 		views = cur.fetchall()
+		temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
+		liked = cur.fetchall()
 		cur.close()
-		return render_template('result_user.html',results = total,keyword =keywords,name=un,likes=likes,views=views)
+		return render_template('result_user.html',results = total,keyword =keywords,name=un,likes=likes,views=views,liked=liked,loggedin=loggedin,adminloggedin=ad_loggedin)
 
 
 if __name__=='__main__':
