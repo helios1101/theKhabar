@@ -909,7 +909,7 @@ def add():
 				s=Entertainment(title,author,date,summary,url,description,urlimg,i)
 				db.session.add(s)
 				db.session.commit()
-		return render_template('admin_home.html')
+		return render_template('news_user.html')
 	return render_template('addArticle.html')
 
 @app.route('/delete',methods = ['GET','POST'])
@@ -1043,6 +1043,7 @@ def result(keywords):
 	else:
 		if request.method == 'POST':
 			if 'Like' in request.form:
+				print("Liked clicked")
 				title = request.form['title']
 				userName = un
 				cur=mysql.connection.cursor()
@@ -1058,6 +1059,15 @@ def result(keywords):
 				new = Views(title,username,comments)
 				db.session.add(new)
 				db.session.commit()
+			if ad_loggedin:
+				if 'delete' in request.form:
+					print("delete clicked")
+					title=request.form['title']
+					cur=mysql.connection.cursor()
+					cur.execute("""DELETE FROM Sports where title=%s""",[title])
+					mysql.connection.commit()
+					db.session.commit()
+
 
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
