@@ -909,7 +909,7 @@ def add():
 				s=Entertainment(title,author,date,summary,url,description,urlimg,i)
 				db.session.add(s)
 				db.session.commit()
-		return render_template('admin_home.html')
+		return redirect(url_for('admin_home'))
 	return render_template('addArticle.html')
 
 @app.route('/delete',methods = ['GET','POST'])
