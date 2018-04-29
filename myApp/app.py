@@ -353,7 +353,7 @@ def user_home():
 	cur.close()
 	return render_template('logged.html',name=un,homenews=listNews,userloggedin=loggedin,likes=likes,views=views,liked=liked)
 
-@app.route('/admin_home',methods = ['GET','POST'])
+@app.route('/admin_home0',methods = ['GET','POST'])
 def admin_home():
 	cur=mysql.connection.cursor()
 	us=cur.execute("SELECT * FROM Admin WHERE username=%s",[un])
@@ -911,6 +911,10 @@ def add():
 				db.session.commit()
 		return render_template('admin_home.html')
 	return render_template('addArticle.html')
+
+@app.route('/delete',methods = ['GET','POST'])
+def delete():
+	pass
 
 @app.route('/search',methods = ['GET','POST'])
 def search():
