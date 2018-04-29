@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 {% block body %}
-<div style="background-color: black; padding:20px">
+<!-- <div style="background-color: black; padding:20px"> -->
 {% for news_row in khabar|batch(2) %}
 <div class="row">
   {%for news in news_row%}
@@ -49,5 +49,5 @@
 {%endfor%}
 </div>
 {% endfor %}
-</div>
+<!-- </div> -->
 {% endblock %}
