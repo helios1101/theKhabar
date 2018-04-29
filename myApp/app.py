@@ -950,8 +950,11 @@ def result(keywords):
 	total.clear()
 	totalSet.clear()
 	flag=0
-	temp=newsCursor.execute("""SELECT * FROM Sports WHERE keyword= %s """,[keywords])
-	complete = newsCursor.fetchall()
+	# temp=newsCursor.execute("""SELECT * FROM Sports WHERE keyword= %s """,[keywords])
+	# complete = newsCursor.fetchall()
+	tempcur=mysql.connection.cursor()
+	temp=tempcur.execute("select * from Sports where keyword=%s",[keywords])
+	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
 	else:	
@@ -964,8 +967,11 @@ def result(keywords):
 			global total
 			total.append(khabar)
 	
-	temp=newsCursor.execute("""SELECT * FROM General WHERE keyword= %s """,[keywords])
-	complete = newsCursor.fetchall()
+	# temp=newsCursor.execute("""SELECT * FROM General WHERE keyword= %s """,[keywords])
+	# complete = newsCursor.fetchall()
+	tempcur=mysql.connection.cursor()
+	temp=tempcur.execute("select * from General where keyword=%s",[keywords])
+	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
 	else:	
@@ -978,8 +984,11 @@ def result(keywords):
 			global total
 			total.append(khabar)
 	
-	temp=newsCursor.execute("""SELECT * FROM Entertainment WHERE keyword= %s """,[keywords])
-	complete = newsCursor.fetchall()
+	# temp=newsCursor.execute("""SELECT * FROM Entertainment WHERE keyword= %s """,[keywords])
+	# complete = newsCursor.fetchall()
+	tempcur=mysql.connection.cursor()
+	temp=tempcur.execute("select * from Entertainment where keyword=%s",[keywords])
+	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
 	else:	
@@ -992,8 +1001,11 @@ def result(keywords):
 			global total
 			total.append(khabar)
 	
-	temp=newsCursor.execute("""SELECT * FROM Technology WHERE keyword= %s """,[keywords])
-	complete = newsCursor.fetchall()
+	#temp=newsCursor.execute("""SELECT * FROM Technology WHERE keyword= %s """,[keywords])
+	# complete = newsCursor.fetchall()
+	tempcur=mysql.connection.cursor()
+	temp=tempcur.execute("select * from Technology where keyword=%s",[keywords])
+	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
 	else:	
@@ -1006,8 +1018,11 @@ def result(keywords):
 			global total
 			total.append(khabar)
 	
-	temp=newsCursor.execute("""SELECT * FROM Science WHERE keyword= %s """,[keywords])
-	complete = newsCursor.fetchall()
+	#temp=newsCursor.execute("""SELECT * FROM Science WHERE keyword= %s """,[keywords])
+	#complete = newsCursor.fetchall()
+	tempcur=mysql.connection.cursor()
+	temp=tempcur.execute("select * from Science where keyword=%s",[keywords])
+	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
 	else:	
@@ -1020,8 +1035,11 @@ def result(keywords):
 			global total
 			total.append(khabar)
 
-	temp=newsCursor.execute("""SELECT * FROM Business WHERE keyword= %s """,[keywords])
-	complete = newsCursor.fetchall()
+	#temp=newsCursor.execute("""SELECT * FROM Business WHERE keyword= %s """,[keywords])
+	#complete = newsCursor.fetchall()
+	tempcur=mysql.connection.cursor()
+	temp=tempcur.execute("select * from Business where keyword=%s",[keywords])
+	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
 	else:	
@@ -1034,8 +1052,11 @@ def result(keywords):
 			global total
 			total.append(khabar)
 
-	temp=newsCursor.execute("""SELECT * FROM Health WHERE keyword= %s """,[keywords])
-	complete = newsCursor.fetchall()
+	#temp=newsCursor.execute("""SELECT * FROM Health WHERE keyword= %s """,[keywords])
+	#complete = newsCursor.fetchall()
+	tempcur=mysql.connection.cursor()
+	temp=tempcur.execute("select * from Health where keyword=%s",[keywords])
+	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
 	else:	
