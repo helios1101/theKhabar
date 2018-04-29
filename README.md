@@ -5,8 +5,6 @@ Lets hope we finish it in time.
 WE ARE MAKING NEWS APP	
 Problems with the app:
 1) Non logged in picture not available at side nav in search querry
-2) Black thing to be removed 
-3) above navbar could be improved, UI beautification 
 4) Code quality to be improved massively
 5) Documentation to be added
 6) logging out during credits

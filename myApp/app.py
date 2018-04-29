@@ -84,7 +84,7 @@ def register():
 		orderlist = ['Sports','Entertainment','General','Business','Health','Science','Technology']
 		for category in orderlist:
 			if request.form.get(category):
-				order.append(category)
+		 		order.append(category)
 		
 		order = ','.join(order)
 		password=sha256_crypt.encrypt(str(request.form['password']))
@@ -522,9 +522,11 @@ def change_user():
 def sportPage():
 	setSports = set()
 	listSports = []
-	instSports = """select * from Sports order by date DESC"""
-	newsCursor.execute(instSports)
-	sports = newsCursor.fetchall()
+	# instSports = """select * from Sports order by date DESC"""
+	# newsCursor.execute(instSports)
+	tempcur=mysql.connection.cursor()
+	tempcur.execute("select * from Sports order by date DESC")
+	sports = tempcur.fetchall()
 	for title in sports:
 		if title['title'] in setSports:
 			pass 
@@ -572,11 +574,16 @@ def sportPage():
 
 @app.route('/general',methods=['GET','POST'])
 def generalPage():
+	tempcur=mysql.connection.cursor()
+	tempcur.execute("select * from General order by date DESC")
+	# tt=tempcur.fetchall()
+	# print(tt)
 	setGeneral = set()
 	listGeneral = []
-	instGeneral = """select * from General order by date DESC"""
-	newsCursor.execute(instGeneral)
-	general = newsCursor.fetchall()
+	# instGeneral = """select * from General order by date DESC"""
+	# newsCursor.execute(instGeneral)
+	general = tempcur.fetchall()
+	# print(general)
 	for title in general:
 		if title['title'] in setGeneral:
 			pass 
@@ -623,9 +630,11 @@ def generalPage():
 def entertainmentPage():
 	setEntertainment = set()
 	listEntertainment = []
-	instEntertainment = """select * from Entertainment order by date DESC """
-	newsCursor.execute(instEntertainment)
-	entertainment = newsCursor.fetchall()
+	# instEntertainment = """select * from Entertainment order by date DESC """
+	# newsCursor.execute(instEntertainment)
+	tempcur=mysql.connection.cursor()
+	tempcur.execute("select * from Entertainment order by date DESC")
+	entertainment = tempcur.fetchall()
 	for title in entertainment:
 		if title['title'] in setEntertainment:
 			pass 
@@ -671,9 +680,11 @@ def entertainmentPage():
 def technologyPage():
 	setTechnology = set()
 	listTechnology = []
-	instTechnology = """select * from Technology order by date DESC """
-	newsCursor.execute(instTechnology)
-	technology = newsCursor.fetchall()
+	# instTechnology = """select * from Technology order by date DESC """
+	# newsCursor.execute(instTechnology)
+	tempcur=mysql.connection.cursor()
+	tempcur.execute("select * from Technology order by date DESC")
+	technology = tempcur.fetchall()
 	for title in technology:
 		if title['title'] in setTechnology:
 			pass 
@@ -719,9 +730,11 @@ def technologyPage():
 def sciencePage():
 	setScience = set()
 	listScience = []
-	instScience = """select * from Science order by date DESC"""
-	newsCursor.execute(instScience)
-	science = newsCursor.fetchall()
+	# instScience = """select * from Science order by date DESC"""
+	# newsCursor.execute(instScience)
+	tempcur=mysql.connection.cursor()
+	tempcur.execute("select * from Science order by date DESC")
+	science = tempcur.fetchall()
 	for title in science:
 		if title['title'] in setScience:
 			pass 
@@ -767,9 +780,11 @@ def sciencePage():
 def businessPage():
 	setBusiness = set()
 	listBusiness = []
-	instBusiness = """select * from Business order by date DESC"""
-	newsCursor.execute(instBusiness)
-	business = newsCursor.fetchall()
+	# instBusiness = """select * from Business order by date DESC"""
+	# newsCursor.execute(instBusiness)
+	tempcur=mysql.connection.cursor()
+	tempcur.execute("select * from Business order by date DESC")
+	business = tempcur.fetchall()
 	for title in business:
 		if title['title'] in setBusiness:
 			pass 
@@ -815,9 +830,11 @@ def businessPage():
 def healthPage():
 	setHealth = set()
 	listHealth = []
-	instHealth = """select * from Health order by date DESC"""
-	newsCursor.execute(instHealth)
-	health = newsCursor.fetchall()
+	# instHealth = """select * from Health order by date DESC"""
+	# newsCursor.execute(instHealth)
+	tempcur=mysql.connection.cursor()
+	tempcur.execute("select * from Health order by date DESC")
+	health = tempcur.fetchall()
 	for title in health:
 		if title['title'] in setHealth:
 			pass 
@@ -910,7 +927,6 @@ def add():
 				db.session.add(s)
 				db.session.commit()
 		return redirect(url_for('admin_home'))
-	return render_template('addArticle.html')
 
 @app.route('/delete',methods = ['GET','POST'])
 def delete():
@@ -933,8 +949,11 @@ def result(keywords):
 	total.clear()
 	totalSet.clear()
 	flag=0
-	temp=newsCursor.execute("""SELECT * FROM Sports WHERE keyword= %s """,[keywords])
-	complete = newsCursor.fetchall()
+	# temp=newsCursor.execute("""SELECT * FROM Sports WHERE keyword= %s """,[keywords])
+	# complete = newsCursor.fetchall()
+	tempcur=mysql.connection.cursor()
+	temp=tempcur.execute("select * from Sports where keyword=%s",[keywords])
+	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
 	else:	
@@ -947,8 +966,11 @@ def result(keywords):
 			global total
 			total.append(khabar)
 	
-	temp=newsCursor.execute("""SELECT * FROM General WHERE keyword= %s """,[keywords])
-	complete = newsCursor.fetchall()
+	# temp=newsCursor.execute("""SELECT * FROM General WHERE keyword= %s """,[keywords])
+	# complete = newsCursor.fetchall()
+	tempcur=mysql.connection.cursor()
+	temp=tempcur.execute("select * from General where keyword=%s",[keywords])
+	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
 	else:	
@@ -961,8 +983,11 @@ def result(keywords):
 			global total
 			total.append(khabar)
 	
-	temp=newsCursor.execute("""SELECT * FROM Entertainment WHERE keyword= %s """,[keywords])
-	complete = newsCursor.fetchall()
+	# temp=newsCursor.execute("""SELECT * FROM Entertainment WHERE keyword= %s """,[keywords])
+	# complete = newsCursor.fetchall()
+	tempcur=mysql.connection.cursor()
+	temp=tempcur.execute("select * from Entertainment where keyword=%s",[keywords])
+	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
 	else:	
@@ -975,8 +1000,11 @@ def result(keywords):
 			global total
 			total.append(khabar)
 	
-	temp=newsCursor.execute("""SELECT * FROM Technology WHERE keyword= %s """,[keywords])
-	complete = newsCursor.fetchall()
+	#temp=newsCursor.execute("""SELECT * FROM Technology WHERE keyword= %s """,[keywords])
+	# complete = newsCursor.fetchall()
+	tempcur=mysql.connection.cursor()
+	temp=tempcur.execute("select * from Technology where keyword=%s",[keywords])
+	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
 	else:	
@@ -989,8 +1017,11 @@ def result(keywords):
 			global total
 			total.append(khabar)
 	
-	temp=newsCursor.execute("""SELECT * FROM Science WHERE keyword= %s """,[keywords])
-	complete = newsCursor.fetchall()
+	#temp=newsCursor.execute("""SELECT * FROM Science WHERE keyword= %s """,[keywords])
+	#complete = newsCursor.fetchall()
+	tempcur=mysql.connection.cursor()
+	temp=tempcur.execute("select * from Science where keyword=%s",[keywords])
+	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
 	else:	
@@ -1003,8 +1034,11 @@ def result(keywords):
 			global total
 			total.append(khabar)
 
-	temp=newsCursor.execute("""SELECT * FROM Business WHERE keyword= %s """,[keywords])
-	complete = newsCursor.fetchall()
+	#temp=newsCursor.execute("""SELECT * FROM Business WHERE keyword= %s """,[keywords])
+	#complete = newsCursor.fetchall()
+	tempcur=mysql.connection.cursor()
+	temp=tempcur.execute("select * from Business where keyword=%s",[keywords])
+	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
 	else:	
@@ -1017,8 +1051,11 @@ def result(keywords):
 			global total
 			total.append(khabar)
 
-	temp=newsCursor.execute("""SELECT * FROM Health WHERE keyword= %s """,[keywords])
-	complete = newsCursor.fetchall()
+	#temp=newsCursor.execute("""SELECT * FROM Health WHERE keyword= %s """,[keywords])
+	#complete = newsCursor.fetchall()
+	tempcur=mysql.connection.cursor()
+	temp=tempcur.execute("select * from Health where keyword=%s",[keywords])
+	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
 	else:	
@@ -1043,6 +1080,7 @@ def result(keywords):
 	else:
 		if request.method == 'POST':
 			if 'Like' in request.form:
+				print("Liked clicked")
 				title = request.form['title']
 				userName = un
 				cur=mysql.connection.cursor()
@@ -1058,6 +1096,27 @@ def result(keywords):
 				new = Views(title,username,comments)
 				db.session.add(new)
 				db.session.commit()
+			if ad_loggedin:
+				if 'delete' in request.form:
+					print("delete clicked")
+					title=request.form['title']
+					# category=request.form['category']
+					print(title	)
+					# print(category)
+					cur=mysql.connection.cursor()
+					cur.execute("""DELETE FROM General where title=%s""",[title])
+					cur.execute("""DELETE FROM Sports where title=%s""",[title])
+					cur.execute("""DELETE FROM Health where title=%s""",[title])
+					cur.execute("""DELETE FROM Business where title=%s""",[title])
+					cur.execute("""DELETE FROM Science where title=%s""",[title])
+					cur.execute("""DELETE FROM Technology where title=%s""",[title])
+					cur.execute("""DELETE FROM Entertainment where title=%s""",[title])
+					cur.execute("""DELETE FROM Views where news=%s""",[title])
+					cur.execute("""DELETE FROM Likes where news=%s""",[title])
+					mysql.connection.commit()
+					cur.close()
+					#db.session.commit()
+
 
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")

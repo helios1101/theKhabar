@@ -5,7 +5,7 @@
     <h3>Your one stop destination for the trending news of the day</h3>
     {% include 'includes/_messages.html' %}
 </div>
-<div style="background-color: black; padding:20px">
+<!-- <div style="background-color: black; padding:20px"> -->
   {% for news_row in homenews|batch(2) %}
 <div class="row">
   {%for news in news_row%}
@@ -60,11 +60,11 @@
 {%endfor%}
 </div>
 {% endfor %}
-</div>
+<!-- </div> -->
 <div class="jumbotron text-center" style="margin: 20px">
-    <h1>Want news that suits you ?</h1>
-    <h3><a href = "{{url_for('.login')}}"> Click here to login </a></h3><br/>
-    <h3><a href = "{{url_for('.register')}}"> Click here to register </a></h3>
+    <h4>Want news that suits you ?</h4>
+    <h6><a href = "{{url_for('.login')}}"> Click here to login </a></h6><br/>
+    <h6><a href = "{{url_for('.register')}}"> Click here to register </a></h6>
     
     
 </div>
