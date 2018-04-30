@@ -32,6 +32,7 @@
               
             </form>
             
+            
           </div>
           <div class="card-content">
             <span class="card-title">{{news['title']}}</span>
@@ -65,30 +66,32 @@
                     <i class="material-icons">create</i>
                   </button>         
                 </form>
-               <!--  <ul class="collection">
-                  {% for i in views %}
-                  {%- if news['title'] in i.values() %}
-
-                  <li class="collection-item avatar">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMvm6UclGzn245GcuvQ20eJaY5nugtX7HosGOB43IqogmB_ohz" alt="" class="circle responsive-img" >
-                    <span class="title"><b><i>POSTED_BY</i></b>{{i['user']}}</span>
-                    <p>{{i['comments']}} <br>
-                   </p>
-                   <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                 </li>
-                 {% endif %}
-                 {% endfor %}
-                 </ul> -->
+                 
                  {% for i in views %}
                   {% if news['title'] == i['news'] %}
-                  <!-- <li class="collection-item avatar"> -->
+                  
                     <div style="background-color: lightgrey;margin: 5px;padding: 5px">
                     <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMvm6UclGzn245GcuvQ20eJaY5nugtX7HosGOB43IqogmB_ohz" alt="" class="circle responsive-img" width="40px" >
                     <span class="title"><b><i>POSTED_BY: </i></b>{{i['user']}}</span></p>
-                    <p><span class="title"><b><i>COMMENT: </i></b>{{i['comments']}}</span></p></div>
-                 <!-- </li> -->
+                    <p><span class="title"><b><i>COMMENT: </i></b>{{i['comments']}} {{adminloggedin}}</span></p>
+                    {% if adminloggedin %}
+                    <p>
+                      <form method = "POST", action="">
+                        <input type = "text" name = "title" value = "{{news.title}}" style="display: none">
+                        <input type = "text" name = "username" value = "{{i['user']}}" id = "user" style="display: none">
+                        <input type = "text" name = "comment" value = "{{i['comments']}}" id = "comment" style="display: none">
+                        <input type = "text" name = "uid" value = "{{i['uid']}}" id = "uid" style="display: none">
+                        <button class="btn-floating  waves-effect waves-light red" type= "submit" name="deleteComment" value = "deleteComment" action ="deleteComment" style = "left: 95%">
+                          <i class="material-icons">cancel</i>
+                        </button>
+                      </form>       
+
+                      {% endif %}
+                    </div>
+
                  {% endif %}
                  {% endfor %}
+                  
 
 
                </div>

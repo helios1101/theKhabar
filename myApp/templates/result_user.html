@@ -10,90 +10,115 @@
 {% block body %}
 <div class="jumbotron text-center" style="margin:20px; padding: 10px;">
   <h4 style="text-align: center;"><u>Search Results</u></p>
-  <p>Here are the articles with keyword "{{keyword}}"</p>
-  
-</div>
-<!-- <div style="background-color: black; padding:20px"> -->
-{% for news_row in results|batch(2) %}
-<div class="row">
-  {%for news in news_row%}
-  <div class="col s1">
-    <div class="row">
-      <div class="col s12 m7">
-        <div class="card">
-          <div class="card-image">
-            <img src="{{news['image']}}"
-            onerror="this.onerror=null;this.src='https://i0.wp.com/www.insidesport.co/wp-content/uploads/2017/05/Leed-Story-5.jpg?fit=1068%2C713&ssl=1';">
+    <p>Here are the articles with keyword "{{keyword}}"</p>
 
+  </div>
+  <!-- <div style="background-color: black; padding:20px"> -->
+  {% for news_row in results|batch(2) %}
+  <div class="row">
+    {%for news in news_row%}
+    <div class="col s1">
+      <div class="row">
+        
+       
+        <div class="col s12 m7">
+
+          
+          <div class="card">
+            {% if adminloggedin %}
             <form method = "POST", action="">
               <input type = "text" name = "title" value = "{{news.title}}" style="display: none">
               <input type = "text" name = "username" value = "{{un}}" id = "username" style="display: none">
-              <button class="btn-floating halfway-fab waves-effect waves-light blue" type="submit" name="Like" value = "Like" action ="Like">
-                <i class="material-icons">thumb_up</i>
-              </button>       
-             {% if adminloggedin %}
-                 <button class="btn modal-trigger" type= "submit" name="delete" value = "delete" action ="delete">Delete</button>       
-            {% endif %} 
-            </form>
-            
-          </div>
-          <div class="card-content">
-            <span class="card-title">{{news['title']}}</span>
-            <p>
+              <button class="btn-floating  waves-effect waves-light red" type= "submit" name="delete" value = "delete" action ="delete" style = "left: 95%">
+                <i class="material-icons">cancel</i>
+              </button>
+            </form>       
+            {% endif %}
+            <div class="card-image">
+              <img src="{{news['image']}}"
+              onerror="this.onerror=null;this.src='https://i0.wp.com/www.insidesport.co/wp-content/uploads/2017/05/Leed-Story-5.jpg?fit=1068%2C713&ssl=1';">
 
-              <b>
-                {% for i in likes  %}
-                {%- if news.title in i.values() %}
-                {{i['count(likes)']}} people liked it.
-                {% endif %}
-                {% endfor %}
-              </b> 
-            </p>
-            <p>
-              {{news['description']}}
-            </p>
-          </div>
-          <div class="card-action">
-            <a href="{{news['url']}}">Go To Site</a>
-            <button data-target="modal{{results.index(news)}}" class="btn modal-trigger">Read more</button>
-            
-            <div id="modal{{results.index(news)}}" class="modal modal-fixed-footer">
-              <div class="modal-content">
-                <h4>{{news['title']}}</h4>
-                <p>{{news['summary']}}</p>
-                <form method = 'POST' action="">
-                  <input type = "text" name = "username" value = "{{un}}" id = "username" style="display: none">
-                  <input type = "text" name = "title" value = "{{news['title']}}" id ="title" style="display: none">
-                  <label style="color: black; font-size: 15px;">Comment</label>
-                  <input type="text" name="comment" id ="comment">
-                  <button class="btn-floating waves-effect waves-light blue " id ="random" type="submit" name="Comments" >
-                    <i class="material-icons">create</i>
-                  </button>         
-                </form>
-                 {% for i in views %}
+              <form method = "POST", action="">
+                <input type = "text" name = "title" value = "{{news.title}}" style="display: none">
+                <input type = "text" name = "username" value = "{{un}}" id = "username" style="display: none">
+                <button class="btn-floating halfway-fab waves-effect waves-light blue" type="submit" name="Like" value = "Like" action ="Like">
+                  <i class="material-icons">thumb_up</i>
+                </button>       
+
+              </form>
+              
+            </div>
+            <div class="card-content">
+              <span class="card-title">{{news['title']}}</span>
+              <p>
+
+                <b>
+                  {% for i in likes  %}
+                  {%- if news.title in i.values() %}
+                  {{i['count(likes)']}} people liked it.
+                  {% endif %}
+                  {% endfor %}
+                </b> 
+              </p>
+              <p>
+                {{news['description']}}
+              </p>
+            </div>
+            <div class="card-action">
+              <a href="{{news['url']}}">Go To Site</a>
+              <button data-target="modal{{results.index(news)}}" class="btn modal-trigger">Read more</button>
+              
+              <div id="modal{{results.index(news)}}" class="modal modal-fixed-footer">
+                <div class="modal-content">
+                  <h4>{{news['title']}}</h4>
+                  <p>{{news['summary']}}</p>
+                  <form method = 'POST' action="">
+                    <input type = "text" name = "username" value = "{{un}}" id = "username" style="display: none">
+                    <input type = "text" name = "title" value = "{{news['title']}}" id ="title" style="display: none">
+                    <label style="color: black; font-size: 15px;">Comment</label>
+                    <input type="text" name="comment" id ="comment">
+                    <button class="btn-floating waves-effect waves-light blue " id ="random" type="submit" name="Comments" >
+                      <i class="material-icons">create</i>
+                    </button>         
+                  </form>
+                  {% for i in views %}
                   {% if news['title'] == i['news'] %}
                   <!-- <li class="collection-item avatar"> -->
-                    <div style="background-color: lightgrey;margin: 5px;padding: 5px">
+                  <div style="background-color: lightgrey;margin: 5px;padding: 5px">
                     <p><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMvm6UclGzn245GcuvQ20eJaY5nugtX7HosGOB43IqogmB_ohz" alt="" class="circle responsive-img" width="40px" >
-                    <span class="title"><b><i>POSTED_BY: </i></b>{{i['user']}}</span></p>
-                    <p><span class="title"><b><i>COMMENT: </i></b>{{i['comments']}}</span></p></div>
-                 <!-- </li> -->
-                 {% endif %}
-                 {% endfor %}
+                      <span class="title"><b><i>POSTED_BY: </i></b>{{i['user']}}</span></p>
+                      <p><span class="title"><b><i>COMMENT: </i></b>{{i['comments']}}</span></p>
+                      {% if adminloggedin %}
+                      <p>
+                        <form method = "POST", action="">
+                          <input type = "text" name = "title" value = "{{news.title}}" style="display: none">
+                          <input type = "text" name = "username" value = "{{i['user']}}" id = "user" style="display: none">
+                          <input type = "text" name = "comment" value = "{{i['comments']}}" id = "comment" style="display: none">
+                          <input type = "text" name = "uid" value = "{{i['uid']}}" id = "uid" style="display: none">
+                          <button class="btn-floating  waves-effect waves-light red" type= "submit" name="deleteComment" value = "deleteComment" action ="deleteComment" style = "left: 95%">
+                            <i class="material-icons">cancel</i>
+                          </button>
+                        </form>       
+
+                        {% endif %}
+                      </div>
+                      <!-- </li> -->
+                      {% endif %}
+                      {% endfor %}
 
 
-               </div>
-               <div class="modal-footer">
+                    </div>
+                    <div class="modal-footer">
 
-               </div>
-             </div>
-           </div>
-         </div>
-       </div>
-     </div>
-   </div>
-   {%endfor%}
- </div>
- {% endfor %}
-<!-- </div> -->
- {% endblock %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {%endfor%}
+      </div>
+      {% endfor %}
+      <!-- </div> -->
+      {% endblock %}

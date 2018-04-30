@@ -8,4 +8,4 @@ Problems with the app:
 4) Code quality to be improved massively
 5) Documentation to be added
 6) logging out during credits
-7) Delete articles for admin(ask)
+

@@ -16,21 +16,22 @@ from models import *
 from flask_sqlalchemy import SQLAlchemy
 from random import shuffle
 from forms import *
+
 loggedin=False
 ad_loggedin=False
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:aarush123@@localhost/NEWS'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True 
-db = SQLAlchemy(app)
-news = MySQLdb.connect(host = "localhost",user = "root",passwd = "aarush123@",db="NEWS")
-newsCursor = news.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+
+
 app.config['MYSQL_HOST']='localhost'
 app.config['MYSQL_USER']='root'	
 app.config['MYSQL_PASSWORD']='aarush123@'
 app.config['MYSQL_DB']='NEWS'
 app.config['MYSQL_CURSORCLASS']='DictCursor'
-
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:aarush123@@localhost/NEWS'
+db = SQLAlchemy(app)
 mysql=MySQL(app)
+
 
 un=""
 pref=[]
@@ -42,15 +43,17 @@ def index():
 	setGeneral = set()
 	listGeneral = []
 	instGeneral = """select * from General order by date DESC"""
-	newsCursor.execute(instGeneral)
-	general = newsCursor.fetchall()
+	tempcur=mysql.connection.cursor()
+	tempcur.execute(instGeneral)
+	general = tempcur.fetchall()
+	tempcur.close()
 	x=0
 	for title in general:
 		if title['title'] in setGeneral:
 			pass 
 		else:
 			setGeneral.add(title['title'])
-			if x<5:
+			if x<6:
 				listGeneral.append(title)
 				x+=1
 	return render_template('home.html',homenews=listGeneral)
@@ -61,20 +64,6 @@ def credits():
 
 @app.route('/register',methods=['GET','POST'])
 def register():
-	setGeneral = set()
-	listGeneral = []
-	instGeneral = """select * from General order by date DESC"""
-	newsCursor.execute(instGeneral)
-	general = newsCursor.fetchall()
-	x=0
-	for title in general:
-		if title['title'] in setGeneral:
-			pass 
-		else:
-			setGeneral.add(title['title'])
-			if x<5:
-				listGeneral.append(title)
-				x+=1
 	form = RegisterForm(request.form)
 	if request.method=='POST' and form.validate():
 		name=request.form['name']
@@ -101,20 +90,6 @@ def register():
 
 @app.route('/register_admin',methods=['GET','POST'])
 def register_admin():
-	setGeneral = set()
-	listGeneral = []
-	instGeneral = """select * from General order by date DESC"""
-	newsCursor.execute(instGeneral)
-	general = newsCursor.fetchall()
-	x=0
-	for title in general:
-		if title['title'] in setGeneral:
-			pass 
-		else:
-			setGeneral.add(title['title'])
-			if x<5:
-				listGeneral.append(title)
-				x+=1
 	form = AdminForm(request.form)
 	if request.method=='POST' and form.validate():
 		name=request.form['name']
@@ -141,21 +116,6 @@ def register_admin():
 
 @app.route('/login',methods=['GET','POST'])
 def login():
-	setGeneral = set()
-	listGeneral = []
-	instGeneral = """select * from General order by date DESC"""
-	newsCursor.execute(instGeneral)
-	general = newsCursor.fetchall()
-	x=0
-	for title in general:
-		if title['title'] in setGeneral:
-			pass 
-		else:
-			setGeneral.add(title['title'])
-			if x<5:
-				listGeneral.append(title)
-				x+=1
-	db.session.commit()
 	if request.method=='POST':
 		usern1=request.form['username']
 		password_candidate=request.form['password']
@@ -182,21 +142,6 @@ def login():
 def login_admin():
 	global ad_loggedin
 	ad_loggedin=False
-	setGeneral = set()
-	listGeneral = []
-	instGeneral = """select * from General order by date DESC"""
-	newsCursor.execute(instGeneral)
-	general = newsCursor.fetchall()
-	x=0
-	for title in general:
-		if title['title'] in setGeneral:
-			pass 
-		else:
-			setGeneral.add(title['title'])
-			if x<5:
-				listGeneral.append(title)
-				x+=1
-	db.session.commit()
 	if request.method=='POST':
 		usern1=request.form['username']
 		password_candidate=request.form['password']
@@ -330,6 +275,8 @@ def user_home():
 				new = Likes(title,userName,1)
 				db.session.add(new)
 				db.session.commit()
+			return redirect(url_for('user_home'))
+	
 			
 		if 'Comments' in request.form:
 			username = un
@@ -338,22 +285,31 @@ def user_home():
 			new = Views(title,username,comments)
 			db.session.add(new)
 			db.session.commit()
+			return redirect(url_for('user_home'))
+	
+
+		if ad_loggedin:
+			if 'deleteComment' in request.form:
+				uid=request.form['uid']
+				cur=mysql.connection.cursor()
+				cur.execute("""DELETE FROM Views where uid=%s""",[uid])
+				mysql.connection.commit()
+				cur.close() 
+				return redirect(url_for('user_home'))
+	
+	
 
 	cur=mysql.connection.cursor()
 	temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
 	likes = cur.fetchall()
-	cur.close()
-	cur=mysql.connection.cursor()
 	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 	views = cur.fetchall()
-	cur.close()
-	cur=mysql.connection.cursor()
 	temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
 	liked = cur.fetchall()
 	cur.close()
 	return render_template('logged.html',name=un,homenews=listNews,userloggedin=loggedin,likes=likes,views=views,liked=liked)
 
-@app.route('/admin_home0',methods = ['GET','POST'])
+@app.route('/admin_home',methods = ['GET','POST'])
 def admin_home():
 	cur=mysql.connection.cursor()
 	us=cur.execute("SELECT * FROM Admin WHERE username=%s",[un])
@@ -456,6 +412,7 @@ def admin_home():
 				new = Likes(title,userName,1)
 				db.session.add(new)
 				db.session.commit()
+			return redirect(url_for('admin_home'))
 			
 		if 'Comments' in request.form:
 			username = un
@@ -464,16 +421,22 @@ def admin_home():
 			new = Views(title,username,comments)
 			db.session.add(new)
 			db.session.commit()
+			return redirect(url_for('admin_home'))
+
+		if ad_loggedin:
+			if 'deleteComment' in request.form:
+				uid=request.form['uid']
+				cur=mysql.connection.cursor()
+				cur.execute("""DELETE FROM Views where uid=%s""",[uid])
+				mysql.connection.commit()
+				cur.close() 
+				return redirect(url_for('admin_home'))
 
 	cur=mysql.connection.cursor()
 	temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
 	likes = cur.fetchall()
-	cur.close()
-	cur=mysql.connection.cursor()
 	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 	views = cur.fetchall()
-	cur.close()
-	cur=mysql.connection.cursor()
 	temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
 	liked = cur.fetchall()
 	cur.close()
@@ -522,8 +485,6 @@ def change_user():
 def sportPage():
 	setSports = set()
 	listSports = []
-	# instSports = """select * from Sports order by date DESC"""
-	# newsCursor.execute(instSports)
 	tempcur=mysql.connection.cursor()
 	tempcur.execute("select * from Sports order by date DESC")
 	sports = tempcur.fetchall()
@@ -551,6 +512,7 @@ def sportPage():
 					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
+				return redirect(url_for('sportPage'))
 			
 			if 'Comments' in request.form:
 				username = un
@@ -559,6 +521,18 @@ def sportPage():
 				new = Views(title,username,comments)
 				db.session.add(new)
 				db.session.commit()
+				return redirect(url_for('sportPage'))
+
+			if ad_loggedin:
+				if 'deleteComment' in request.form:
+					uid=request.form['uid']
+					cur=mysql.connection.cursor()
+					cur.execute("""DELETE FROM Views where uid=%s""",[uid])
+					mysql.connection.commit()
+					cur.close() 
+					return redirect(url_for('sportPage'))
+
+
 
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
@@ -568,6 +542,7 @@ def sportPage():
 		temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
 		liked = cur.fetchall()
 		cur.close()
+		print(ad_loggedin)
 		return render_template('news_user.html',khabar = listSports,name=un,likes=likes,views=views,liked=liked,loggedin=loggedin,adminloggedin=ad_loggedin)
 	
 
@@ -576,14 +551,9 @@ def sportPage():
 def generalPage():
 	tempcur=mysql.connection.cursor()
 	tempcur.execute("select * from General order by date DESC")
-	# tt=tempcur.fetchall()
-	# print(tt)
 	setGeneral = set()
 	listGeneral = []
-	# instGeneral = """select * from General order by date DESC"""
-	# newsCursor.execute(instGeneral)
 	general = tempcur.fetchall()
-	# print(general)
 	for title in general:
 		if title['title'] in setGeneral:
 			pass 
@@ -607,6 +577,7 @@ def generalPage():
 					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
+				return redirect(url_for('generalPage'))
 			
 			if 'Comments' in request.form:
 				username = un
@@ -615,6 +586,16 @@ def generalPage():
 				new = Views(title,username,comments)
 				db.session.add(new)
 				db.session.commit()
+				return redirect(url_for('generalPage'))
+
+			if ad_loggedin:
+				if 'deleteComment' in request.form:
+					uid=request.form['uid']
+					cur=mysql.connection.cursor()
+					cur.execute("""DELETE FROM Views where uid=%s""",[uid])
+					mysql.connection.commit()
+					cur.close() 
+					return redirect(url_for('generalPage'))
 
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
@@ -630,8 +611,6 @@ def generalPage():
 def entertainmentPage():
 	setEntertainment = set()
 	listEntertainment = []
-	# instEntertainment = """select * from Entertainment order by date DESC """
-	# newsCursor.execute(instEntertainment)
 	tempcur=mysql.connection.cursor()
 	tempcur.execute("select * from Entertainment order by date DESC")
 	entertainment = tempcur.fetchall()
@@ -658,6 +637,7 @@ def entertainmentPage():
 					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
+				return redirect(url_for('entertainmentPage'))
 			if 'Comments' in request.form:
 				username = un
 				title = request.form['title']
@@ -665,6 +645,16 @@ def entertainmentPage():
 				new = Views(title,username,comments)
 				db.session.add(new)
 				db.session.commit()
+				return redirect(url_for('entertainmentPage'))
+
+			if ad_loggedin:
+				if 'deleteComment' in request.form:
+					uid=request.form['uid']
+					cur=mysql.connection.cursor()
+					cur.execute("""DELETE FROM Views where uid=%s""",[uid])
+					mysql.connection.commit()
+					cur.close() 
+					return redirect(url_for('entertainmentPage'))
 
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
@@ -680,8 +670,6 @@ def entertainmentPage():
 def technologyPage():
 	setTechnology = set()
 	listTechnology = []
-	# instTechnology = """select * from Technology order by date DESC """
-	# newsCursor.execute(instTechnology)
 	tempcur=mysql.connection.cursor()
 	tempcur.execute("select * from Technology order by date DESC")
 	technology = tempcur.fetchall()
@@ -708,6 +696,7 @@ def technologyPage():
 					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
+				return redirect(url_for('technologyPage'))
 			if 'Comments' in request.form:
 				username = un
 				title = request.form['title']
@@ -715,6 +704,16 @@ def technologyPage():
 				new = Views(title,username,comments)
 				db.session.add(new)
 				db.session.commit()
+				return redirect(url_for('technologyPage'))
+
+			if ad_loggedin:
+				if 'deleteComment' in request.form:
+					uid=request.form['uid']
+					cur=mysql.connection.cursor()
+					cur.execute("""DELETE FROM Views where uid=%s""",[uid])
+					mysql.connection.commit()
+					cur.close() 
+					return redirect(url_for('technologyPage'))
 
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
@@ -730,8 +729,6 @@ def technologyPage():
 def sciencePage():
 	setScience = set()
 	listScience = []
-	# instScience = """select * from Science order by date DESC"""
-	# newsCursor.execute(instScience)
 	tempcur=mysql.connection.cursor()
 	tempcur.execute("select * from Science order by date DESC")
 	science = tempcur.fetchall()
@@ -758,6 +755,7 @@ def sciencePage():
 					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
+				return redirect(url_for('sciencePage'))
 			if 'Comments' in request.form:
 				username = un
 				title = request.form['title']
@@ -765,6 +763,17 @@ def sciencePage():
 				new = Views(title,username,comments)
 				db.session.add(new)
 				db.session.commit()
+				return redirect(url_for('sciencePage'))
+
+
+			if ad_loggedin:
+				if 'deleteComment' in request.form:
+					uid=request.form['uid']
+					cur=mysql.connection.cursor()
+					cur.execute("""DELETE FROM Views where uid=%s""",[uid])
+					mysql.connection.commit()
+					cur.close() 
+					return redirect(url_for('sciencePage'))
 
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
@@ -780,8 +789,6 @@ def sciencePage():
 def businessPage():
 	setBusiness = set()
 	listBusiness = []
-	# instBusiness = """select * from Business order by date DESC"""
-	# newsCursor.execute(instBusiness)
 	tempcur=mysql.connection.cursor()
 	tempcur.execute("select * from Business order by date DESC")
 	business = tempcur.fetchall()
@@ -808,6 +815,7 @@ def businessPage():
 					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
+				return redirect(url_for('businessPage'))
 			if 'Comments' in request.form:
 				username = un
 				title = request.form['title']
@@ -815,6 +823,17 @@ def businessPage():
 				new = Views(title,username,comments)
 				db.session.add(new)
 				db.session.commit()
+				return redirect(url_for('businessPage'))
+
+
+			if ad_loggedin:
+				if 'deleteComment' in request.form:
+					uid=request.form['uid']
+					cur=mysql.connection.cursor()
+					cur.execute("""DELETE FROM Views where uid=%s""",[uid])
+					mysql.connection.commit()
+					cur.close() 
+					return redirect(url_for('businessPage'))
 
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
@@ -830,8 +849,6 @@ def businessPage():
 def healthPage():
 	setHealth = set()
 	listHealth = []
-	# instHealth = """select * from Health order by date DESC"""
-	# newsCursor.execute(instHealth)
 	tempcur=mysql.connection.cursor()
 	tempcur.execute("select * from Health order by date DESC")
 	health = tempcur.fetchall()
@@ -858,6 +875,8 @@ def healthPage():
 					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
+				return redirect(url_for('healthPage'))
+
 			if 'Comments' in request.form:
 				username = un
 				title = request.form['title']
@@ -865,6 +884,16 @@ def healthPage():
 				new = Views(title,username,comments)
 				db.session.add(new)
 				db.session.commit()
+				return redirect(url_for('healthPage'))
+
+			if ad_loggedin:
+				if 'deleteComment' in request.form:
+					uid=request.form['uid']
+					cur=mysql.connection.cursor()
+					cur.execute("""DELETE FROM Views where uid=%s""",[uid])
+					mysql.connection.commit()
+					cur.close() 
+					return redirect(url_for('healthPage'))
 
 		cur=mysql.connection.cursor()
 		temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
@@ -926,7 +955,10 @@ def add():
 				s=Entertainment(title,author,date,summary,url,description,urlimg,i)
 				db.session.add(s)
 				db.session.commit()
-		return redirect(url_for('admin_home'))
+		
+		return render_template('addArticle.html')
+
+	return render_template('addArticle.html')
 
 @app.route('/delete',methods = ['GET','POST'])
 def delete():
@@ -949,8 +981,7 @@ def result(keywords):
 	total.clear()
 	totalSet.clear()
 	flag=0
-	# temp=newsCursor.execute("""SELECT * FROM Sports WHERE keyword= %s """,[keywords])
-	# complete = newsCursor.fetchall()
+	
 	tempcur=mysql.connection.cursor()
 	temp=tempcur.execute("select * from Sports where keyword=%s",[keywords])
 	complete=tempcur.fetchall()
@@ -966,9 +997,7 @@ def result(keywords):
 			global total
 			total.append(khabar)
 	
-	# temp=newsCursor.execute("""SELECT * FROM General WHERE keyword= %s """,[keywords])
-	# complete = newsCursor.fetchall()
-	tempcur=mysql.connection.cursor()
+	
 	temp=tempcur.execute("select * from General where keyword=%s",[keywords])
 	complete=tempcur.fetchall()
 	if temp <=0:
@@ -983,9 +1012,7 @@ def result(keywords):
 			global total
 			total.append(khabar)
 	
-	# temp=newsCursor.execute("""SELECT * FROM Entertainment WHERE keyword= %s """,[keywords])
-	# complete = newsCursor.fetchall()
-	tempcur=mysql.connection.cursor()
+	
 	temp=tempcur.execute("select * from Entertainment where keyword=%s",[keywords])
 	complete=tempcur.fetchall()
 	if temp <=0:
@@ -999,10 +1026,8 @@ def result(keywords):
 			totalSet.add(khabar['title'])
 			global total
 			total.append(khabar)
+
 	
-	#temp=newsCursor.execute("""SELECT * FROM Technology WHERE keyword= %s """,[keywords])
-	# complete = newsCursor.fetchall()
-	tempcur=mysql.connection.cursor()
 	temp=tempcur.execute("select * from Technology where keyword=%s",[keywords])
 	complete=tempcur.fetchall()
 	if temp <=0:
@@ -1017,8 +1042,6 @@ def result(keywords):
 			global total
 			total.append(khabar)
 	
-	#temp=newsCursor.execute("""SELECT * FROM Science WHERE keyword= %s """,[keywords])
-	#complete = newsCursor.fetchall()
 	tempcur=mysql.connection.cursor()
 	temp=tempcur.execute("select * from Science where keyword=%s",[keywords])
 	complete=tempcur.fetchall()
@@ -1034,9 +1057,6 @@ def result(keywords):
 			global total
 			total.append(khabar)
 
-	#temp=newsCursor.execute("""SELECT * FROM Business WHERE keyword= %s """,[keywords])
-	#complete = newsCursor.fetchall()
-	tempcur=mysql.connection.cursor()
 	temp=tempcur.execute("select * from Business where keyword=%s",[keywords])
 	complete=tempcur.fetchall()
 	if temp <=0:
@@ -1051,9 +1071,7 @@ def result(keywords):
 			global total
 			total.append(khabar)
 
-	#temp=newsCursor.execute("""SELECT * FROM Health WHERE keyword= %s """,[keywords])
-	#complete = newsCursor.fetchall()
-	tempcur=mysql.connection.cursor()
+
 	temp=tempcur.execute("select * from Health where keyword=%s",[keywords])
 	complete=tempcur.fetchall()
 	if temp <=0:
@@ -1071,6 +1089,8 @@ def result(keywords):
 	if flag == 0:
 		flash('Sorry,No results found :(')
 		return redirect(url_for('search'))
+	
+	tempcur.close()
 	cur=mysql.connection.cursor()
 	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
 	views = cur.fetchall()
@@ -1089,6 +1109,8 @@ def result(keywords):
 					new = Likes(title,userName,1)
 					db.session.add(new)
 					db.session.commit()
+				return redirect(url_for('result',keywords=keywords))
+			
 			if 'Comments' in request.form:
 				username = un
 				title = request.form['title']
@@ -1096,13 +1118,11 @@ def result(keywords):
 				new = Views(title,username,comments)
 				db.session.add(new)
 				db.session.commit()
+				return redirect(url_for('result',keywords=keywords))
+
 			if ad_loggedin:
 				if 'delete' in request.form:
-					print("delete clicked")
 					title=request.form['title']
-					# category=request.form['category']
-					print(title	)
-					# print(category)
 					cur=mysql.connection.cursor()
 					cur.execute("""DELETE FROM General where title=%s""",[title])
 					cur.execute("""DELETE FROM Sports where title=%s""",[title])
@@ -1114,8 +1134,16 @@ def result(keywords):
 					cur.execute("""DELETE FROM Views where news=%s""",[title])
 					cur.execute("""DELETE FROM Likes where news=%s""",[title])
 					mysql.connection.commit()
-					cur.close()
-					#db.session.commit()
+					cur.close() 
+					return redirect(url_for('result',keywords=keywords))
+
+				if 'deleteComment' in request.form:
+					uid=request.form['uid']
+					cur=mysql.connection.cursor()
+					cur.execute("""DELETE FROM Views where uid=%s""",[uid])
+					mysql.connection.commit()
+					cur.close() 
+					return redirect(url_for('result',keywords=keywords))
 
 
 		cur=mysql.connection.cursor()

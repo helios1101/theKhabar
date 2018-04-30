@@ -1,4 +1,7 @@
-{% extends 'layout_admin.html' %}
+{% extends 'layout_logged.html' %}
+{% block nav %}
+{% include 'includes/_navbar_admin.html' %}
+{% endblock %}
 {% block body %}
 <div style="margin: 20px;background-color: white;padding: 20px; opacity: 0.7; color:black;">
 	<h1>Add Article</h1>
