@@ -24,11 +24,11 @@ app = Flask(__name__)
 
 app.config['MYSQL_HOST']='localhost'
 app.config['MYSQL_USER']='root'	
-app.config['MYSQL_PASSWORD']='aarush123@'
+app.config['MYSQL_PASSWORD']='#Neel1998'
 app.config['MYSQL_DB']='NEWS'
 app.config['MYSQL_CURSORCLASS']='DictCursor'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:aarush123@@localhost/NEWS'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:#Neel1998@localhost/NEWS'
 db = SQLAlchemy(app)
 mysql=MySQL(app)
 
@@ -307,8 +307,10 @@ def user_home():
 	temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
 	liked = cur.fetchall()
 	cur.close()
-	return render_template('logged.html',name=un,homenews=listNews,userloggedin=loggedin,likes=likes,views=views,liked=liked)
-
+	if(loggedin):
+		return render_template('logged.html',name=un,homenews=listNews,userloggedin=loggedin,likes=likes,views=views,liked=liked)
+	else:
+		return redirect(url_for('index'))
 @app.route('/admin_home',methods = ['GET','POST'])
 def admin_home():
 	cur=mysql.connection.cursor()
@@ -440,7 +442,10 @@ def admin_home():
 	temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
 	liked = cur.fetchall()
 	cur.close()
-	return render_template('logged.html',name=un,homenews=listNews,adminloggedin=ad_loggedin,likes=likes,views=views,liked=liked)
+	if(ad_loggedin):
+		return render_template('logged.html',name=un,homenews=listNews,adminloggedin=ad_loggedin,likes=likes,views=views,liked=liked)
+	else:
+		return redirect(url_for('index'))
 
 @app.route('/change',methods=['GET','POST'])
 def change():
@@ -1155,7 +1160,9 @@ def result(keywords):
 		liked = cur.fetchall()
 		cur.close()
 		return render_template('result_user.html',results = total,keyword =keywords,name=un,likes=likes,views=views,liked=liked,loggedin=loggedin,adminloggedin=ad_loggedin)
-
+@app.errorhandler(404)
+def err(e):
+	return render_template('404.html')
 
 if __name__=='__main__':
 	app.secret_key=("secretkey")
