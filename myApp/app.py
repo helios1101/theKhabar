@@ -1176,7 +1176,7 @@ def result(keywords):
 	flag=0
 	
 	tempcur=mysql.connection.cursor()
-	temp=tempcur.execute("select * from Sports where keyword=%s",[keywords])
+	temp=tempcur.execute("""select * from Sports where keyword like %s """,[keywords+'%'])
 	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
@@ -1191,7 +1191,7 @@ def result(keywords):
 			total.append(khabar)
 	
 	
-	temp=tempcur.execute("select * from General where keyword=%s",[keywords])
+	temp=tempcur.execute(""" select * from General where keyword like %s""",[keywords+'%'])
 	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
@@ -1206,7 +1206,7 @@ def result(keywords):
 			total.append(khabar)
 	
 	
-	temp=tempcur.execute("select * from Entertainment where keyword=%s",[keywords])
+	temp=tempcur.execute("""select * from Entertainment where keyword like %s """,[keywords+'%'])
 	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
@@ -1221,7 +1221,7 @@ def result(keywords):
 			total.append(khabar)
 
 	
-	temp=tempcur.execute("select * from Technology where keyword=%s",[keywords])
+	temp=tempcur.execute("""select * from Technology where keyword like %s """,[keywords+'%'])
 	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
@@ -1236,7 +1236,7 @@ def result(keywords):
 			total.append(khabar)
 	
 	tempcur=mysql.connection.cursor()
-	temp=tempcur.execute("select * from Science where keyword=%s",[keywords])
+	temp=tempcur.execute("""select * from Science where keyword like %s """,[keywords+'%'])
 	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
@@ -1250,7 +1250,7 @@ def result(keywords):
 			global total
 			total.append(khabar)
 
-	temp=tempcur.execute("select * from Business where keyword=%s",[keywords])
+	temp=tempcur.execute("""select * from Business where keyword like %s """,[keywords+'%'])
 	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
@@ -1265,7 +1265,7 @@ def result(keywords):
 			total.append(khabar)
 
 
-	temp=tempcur.execute("select * from Health where keyword=%s",[keywords])
+	temp=tempcur.execute("""select * from Health where keyword like %s """,[keywords+'%'])
 	complete=tempcur.fetchall()
 	if temp <=0:
 		pass
