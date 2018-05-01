@@ -23,11 +23,11 @@ app = Flask(__name__)
 
 app.config['MYSQL_HOST']='localhost'
 app.config['MYSQL_USER']='root'	
-app.config['MYSQL_PASSWORD']='#Neel1998'
+app.config['MYSQL_PASSWORD']='aarush123@'
 app.config['MYSQL_DB']='NEWS'
 app.config['MYSQL_CURSORCLASS']='DictCursor'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:#Neel1998@localhost/NEWS'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:aarush123@@localhost/NEWS'
 db = SQLAlchemy(app)
 mysql=MySQL(app)
 
@@ -546,9 +546,10 @@ def bookmarks():
 	temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
 	liked = cur.fetchall()
 	cur.close()
-
-	return render_template('bookmarks.html',homenews=news,name=un,likes=likes,views=views,liked=liked,loggedin=loggedin,adminloggedin=ad_loggedin)	
-
+	if loggedin or ad_loggedin:
+		return render_template('bookmarks.html',homenews=news,name=un,likes=likes,views=views,liked=liked,loggedin=loggedin,adminloggedin=ad_loggedin)	
+	else:
+		return redirect(url_for('index'))
 
 
 
