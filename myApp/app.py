@@ -6,7 +6,6 @@ from flask import session
 from flask import logging
 from flask import render_template
 from flask import request
-from data import Articles
 from flask_mysqldb import MySQL
 import MySQLdb
 import MySQLdb.cursors 
@@ -172,6 +171,8 @@ def logout():
 	global ad_loggedin
 	ad_loggedin = False
 	flash("Successfully logged out")
+	global un
+	un = None
 	return redirect(url_for('index'))
 
 @app.route('/user_home',methods=['GET','POST'])
@@ -286,6 +287,25 @@ def user_home():
 			db.session.add(new)
 			db.session.commit()
 			return redirect(url_for('user_home'))
+
+		if 'Bookmarks' in request.form:
+				title = request.form['title']
+				userName = un
+				author = request.form['author']
+				date = request.form['date']
+				summary = request.form['summary']
+				description = request.form['description']
+				image = request.form['image']
+				url = request.form['url']
+				cur=mysql.connection.cursor()
+				temp=cur.execute("""SELECT * FROM Bookmarks WHERE news= %s and user = %s""",[title,userName])
+				if temp<=0:
+					new = Bookmarks(title,userName,author,date,summary,url,description,image)
+					db.session.add(new)
+					db.session.commit()
+				return redirect(url_for('user_home'))
+
+
 	
 
 		if ad_loggedin:
@@ -422,6 +442,22 @@ def admin_home():
 			db.session.add(new)
 			db.session.commit()
 			return redirect(url_for('admin_home'))
+		if 'Bookmarks' in request.form:
+				title = request.form['title']
+				userName = un
+				author = request.form['author']
+				date = request.form['date']
+				summary = request.form['summary']
+				description = request.form['description']
+				image = request.form['image']
+				url = request.form['url']
+				cur=mysql.connection.cursor()
+				temp=cur.execute("""SELECT * FROM Bookmarks WHERE news= %s and user = %s""",[title,userName])
+				if temp<=0:
+					new = Bookmarks(title,userName,author,date,summary,url,description,image)
+					db.session.add(new)
+					db.session.commit()
+				return redirect(url_for('admin_home'))
 
 		if ad_loggedin:
 			if 'deleteComment' in request.form:
@@ -481,6 +517,37 @@ def change_user():
 		   	return render_template('change_user.html',name=un)
 	return render_template('change_user.html',name=un)
 
+@app.route('/bookmarks',methods=['GET','POST'])
+def bookmarks():
+	tempcur=mysql.connection.cursor()
+	tempcur.execute("""select * from Bookmarks where user = %s """,[un])
+	news = tempcur.fetchall()
+	print(news)
+	if request.method == 'POST':
+		if 'deleteBookmarks' in request.form:
+			uid=request.form['uid']
+			cur=mysql.connection.cursor()
+			cur.execute("""DELETE FROM Bookmarks where uid=%s""",[uid])
+			mysql.connection.commit()
+			cur.close()
+			return redirect(url_for('bookmarks'))
+
+
+	cur=mysql.connection.cursor()
+	temp=cur.execute("""SELECT news,count(likes) FROM Likes group by news""")
+	likes = cur.fetchall()
+	temp=cur.execute("""SELECT * FROM Views ORDER BY uid DESC""")
+	views = cur.fetchall()
+	temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
+	liked = cur.fetchall()
+	cur.close()
+
+	return render_template('bookmarks.html',homenews=news,name=un,likes=likes,views=views,liked=liked,loggedin=loggedin,adminloggedin=ad_loggedin)	
+
+
+
+
+
 @app.route('/sports',methods=['GET','POST'])
 def sportPage():
 	setSports = set()
@@ -523,6 +590,23 @@ def sportPage():
 				db.session.commit()
 				return redirect(url_for('sportPage'))
 
+			if 'Bookmarks' in request.form:
+				title = request.form['title']
+				userName = un
+				author = request.form['author']
+				date = request.form['date']
+				summary = request.form['summary']
+				description = request.form['description']
+				image = request.form['image']
+				url = request.form['url']
+				cur=mysql.connection.cursor()
+				temp=cur.execute("""SELECT * FROM Bookmarks WHERE news= %s and user = %s""",[title,userName])
+				if temp<=0:
+					new = Bookmarks(title,userName,author,date,summary,url,description,image)
+					db.session.add(new)
+					db.session.commit()
+				return redirect(url_for('sportPage'))
+
 			if ad_loggedin:
 				if 'deleteComment' in request.form:
 					uid=request.form['uid']
@@ -541,9 +625,10 @@ def sportPage():
 		views = cur.fetchall()
 		temp=cur.execute("""SELECT * FROM Likes where user = %s""",[un])
 		liked = cur.fetchall()
+		temp=cur.execute("""SELECT * FROM Bookmarks where user =%s""",[un])
+		bookmarked = cur.fetchall()
 		cur.close()
-		print(ad_loggedin)
-		return render_template('news_user.html',khabar = listSports,name=un,likes=likes,views=views,liked=liked,loggedin=loggedin,adminloggedin=ad_loggedin)
+		return render_template('news_user.html',khabar = listSports,name=un,likes=likes,views=views,liked=liked,loggedin=loggedin,adminloggedin=ad_loggedin,bookmark = bookmarked)
 	
 
 
@@ -586,6 +671,23 @@ def generalPage():
 				new = Views(title,username,comments)
 				db.session.add(new)
 				db.session.commit()
+				return redirect(url_for('generalPage'))
+
+			if 'Bookmarks' in request.form:
+				title = request.form['title']
+				userName = un
+				author = request.form['author']
+				date = request.form['date']
+				summary = request.form['summary']
+				description = request.form['description']
+				image = request.form['image']
+				url = request.form['url']
+				cur=mysql.connection.cursor()
+				temp=cur.execute("""SELECT * FROM Bookmarks WHERE news= %s and user = %s""",[title,userName])
+				if temp<=0:
+					new = Bookmarks(title,userName,author,date,summary,url,description,image)
+					db.session.add(new)
+					db.session.commit()
 				return redirect(url_for('generalPage'))
 
 			if ad_loggedin:
@@ -647,6 +749,23 @@ def entertainmentPage():
 				db.session.commit()
 				return redirect(url_for('entertainmentPage'))
 
+			if 'Bookmarks' in request.form:
+				title = request.form['title']
+				userName = un
+				author = request.form['author']
+				date = request.form['date']
+				summary = request.form['summary']
+				description = request.form['description']
+				image = request.form['image']
+				url = request.form['url']
+				cur=mysql.connection.cursor()
+				temp=cur.execute("""SELECT * FROM Bookmarks WHERE news= %s and user = %s""",[title,userName])
+				if temp<=0:
+					new = Bookmarks(title,userName,author,date,summary,url,description,image)
+					db.session.add(new)
+					db.session.commit()
+				return redirect(url_for('entertainmentPage'))
+
 			if ad_loggedin:
 				if 'deleteComment' in request.form:
 					uid=request.form['uid']
@@ -706,6 +825,23 @@ def technologyPage():
 				db.session.commit()
 				return redirect(url_for('technologyPage'))
 
+			if 'Bookmarks' in request.form:
+				title = request.form['title']
+				userName = un
+				author = request.form['author']
+				date = request.form['date']
+				summary = request.form['summary']
+				description = request.form['description']
+				image = request.form['image']
+				url = request.form['url']
+				cur=mysql.connection.cursor()
+				temp=cur.execute("""SELECT * FROM Bookmarks WHERE news= %s and user = %s""",[title,userName])
+				if temp<=0:
+					new = Bookmarks(title,userName,author,date,summary,url,description,image)
+					db.session.add(new)
+					db.session.commit()
+				return redirect(url_for('technologyPage'))
+
 			if ad_loggedin:
 				if 'deleteComment' in request.form:
 					uid=request.form['uid']
@@ -763,6 +899,23 @@ def sciencePage():
 				new = Views(title,username,comments)
 				db.session.add(new)
 				db.session.commit()
+				return redirect(url_for('sciencePage'))
+
+			if 'Bookmarks' in request.form:
+				title = request.form['title']
+				userName = un
+				author = request.form['author']
+				date = request.form['date']
+				summary = request.form['summary']
+				description = request.form['description']
+				image = request.form['image']
+				url = request.form['url']
+				cur=mysql.connection.cursor()
+				temp=cur.execute("""SELECT * FROM Bookmarks WHERE news= %s and user = %s""",[title,userName])
+				if temp<=0:
+					new = Bookmarks(title,userName,author,date,summary,url,description,image)
+					db.session.add(new)
+					db.session.commit()
 				return redirect(url_for('sciencePage'))
 
 
@@ -825,6 +978,23 @@ def businessPage():
 				db.session.commit()
 				return redirect(url_for('businessPage'))
 
+			if 'Bookmarks' in request.form:
+				title = request.form['title']
+				userName = un
+				author = request.form['author']
+				date = request.form['date']
+				summary = request.form['summary']
+				description = request.form['description']
+				image = request.form['image']
+				url = request.form['url']
+				cur=mysql.connection.cursor()
+				temp=cur.execute("""SELECT * FROM Bookmarks WHERE news= %s and user = %s""",[title,userName])
+				if temp<=0:
+					new = Bookmarks(title,userName,author,date,summary,url,description,image)
+					db.session.add(new)
+					db.session.commit()
+				return redirect(url_for('businessPage'))
+
 
 			if ad_loggedin:
 				if 'deleteComment' in request.form:
@@ -884,6 +1054,23 @@ def healthPage():
 				new = Views(title,username,comments)
 				db.session.add(new)
 				db.session.commit()
+				return redirect(url_for('healthPage'))
+
+			if 'Bookmarks' in request.form:
+				title = request.form['title']
+				userName = un
+				author = request.form['author']
+				date = request.form['date']
+				summary = request.form['summary']
+				description = request.form['description']
+				image = request.form['image']
+				url = request.form['url']
+				cur=mysql.connection.cursor()
+				temp=cur.execute("""SELECT * FROM Bookmarks WHERE news= %s and user = %s""",[title,userName])
+				if temp<=0:
+					new = Bookmarks(title,userName,author,date,summary,url,description,image)
+					db.session.add(new)
+					db.session.commit()
 				return redirect(url_for('healthPage'))
 
 			if ad_loggedin:
@@ -1120,6 +1307,23 @@ def result(keywords):
 				db.session.commit()
 				return redirect(url_for('result',keywords=keywords))
 
+			if 'Bookmarks' in request.form:
+				title = request.form['title']
+				userName = un
+				author = request.form['author']
+				date = request.form['date']
+				summary = request.form['summary']
+				description = request.form['description']
+				image = request.form['image']
+				url = request.form['url']
+				cur=mysql.connection.cursor()
+				temp=cur.execute("""SELECT * FROM Bookmarks WHERE news= %s and user = %s""",[title,userName])
+				if temp<=0:
+					new = Bookmarks(title,userName,author,date,summary,url,description,image)
+					db.session.add(new)
+					db.session.commit()
+				return redirect(url_for('result',keywords=keywords))
+				
 			if ad_loggedin:
 				if 'delete' in request.form:
 					title=request.form['title']

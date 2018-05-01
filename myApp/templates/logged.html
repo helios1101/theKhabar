@@ -56,6 +56,7 @@
             <div id="modal{{homenews.index(news)}}" class="modal modal-fixed-footer">
               <div class="modal-content">
                 <h4>{{news['title']}}</h4>
+                <h6>{{news['date']}}</h6>
                 <p>{{news['summary']}}</p>
                 <form method = 'POST' action="">
                   <input type = "text" name = "username" value = "{{un}}" id = "username" style="display: none">
@@ -96,7 +97,19 @@
 
                </div>
                <div class="modal-footer">
-
+                <form method = 'POST' action="">
+                    <input type = "text" name = "username" value = "{{un}}" id = "username" style="display: none">
+                    <input type = "text" name = "title" value = "{{news['title']}}" id ="title" style="display: none">
+                    <input type = "text" name = "author" value = "{{news['author']}}" id ="author" style="display: none">
+                    <input type = "text" name = "date" value = "{{news['date']}}" id ="date" style="display: none">
+                    <input type = "text" name = "summary" value = "{{news['summary']}}" id ="summary" style="display: none">
+                    <input type = "text" name = "description" value = "{{news['description']}}" id ="description" style="display: none">
+                    <input type = "text" name = "image" value = "{{news['image']}}" id ="image" style="display: none">
+                    <input type = "text" name = "url" value = "{{news['url']}}" id ="url" style="display: none">
+                    <button class="btn-floating waves-effect waves-light green " id ="random" type="submit" name="Bookmarks">
+                      <i class="material-icons">bookmark</i>
+                    </button>         
+                  </form>
                </div>
              </div>
            </div>

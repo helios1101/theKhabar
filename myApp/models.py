@@ -77,8 +77,29 @@ class Views(db.Model):
 		self.user = user
 		self.comments = comments
 
+class Bookmarks(db.Model):
 
+	__tablename__ = "Bookmarks"
 
+	uid = db.Column(db.Integer,primary_key=True,autoincrement=True)
+	news = db.Column(db.String(length =300,convert_unicode =True),nullable = False)
+	user = db.Column(db.String(length=30))
+	author = db.Column(db.Text)
+	date = db.Column(db.String(11))
+	summary = db.Column(db.Text)
+	url = db.Column(db.Text)
+	description = db.Column(db.Text)
+	image = db.Column(db.Text)
+
+	def __init__(self,news,username,author,date,summary,url,description,image):
+		self.news=news
+		self.user=username
+		self.author = author
+		self.date = date
+		self.summary = summary
+		self.url = url
+		self.description =description
+		self.image = image
 
 class News:
 

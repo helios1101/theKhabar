@@ -1,0 +1,74 @@
+{% extends 'layout_logged.html' %}
+{% block nav %}
+{% if adminloggedin %}
+{% include 'includes/_navbar_admin.html' %}
+{% else %}
+{% include 'includes/_navbar_user.html' %}
+{% endif %}
+{% endblock %}
+{% block body %}
+<div class="jumbotron text-center" style="margin: 20px">
+    <h1>Bookmarks</h1>
+    <h3>All your bookmarks</h3>
+</div>
+<div style=" padding:20px">
+{% if homenews %}
+{% for news_row in homenews|batch(2) %}
+<div class="row">
+  {%for news in news_row%}
+  <div class="col s1">
+    <div class="row">
+      <div class="col s12 m7">
+        <div class="card">
+          <div class="card-image">
+            <img src="{{news['image']}}"
+            onerror="this.onerror=null;this.src='https://i0.wp.com/www.insidesport.co/wp-content/uploads/2017/05/Leed-Story-5.jpg?fit=1068%2C713&ssl=1';">          
+            
+          </div>
+          <div class="card-content">
+            <span class="card-title">{{news['news']}}</span>
+            
+            <p>
+              {{news['description']}}
+            </p>
+          </div>
+          <div class="card-action">
+            <a href="{{news['url']}}">Go To Site</a>
+            <button data-target="modal{{homenews.index(news)}}" class="btn modal-trigger">Read more</button>
+            <div id="modal{{homenews.index(news)}}" class="modal modal-fixed-footer">
+              <div class="modal-content">
+                <h4>{{news['news']}}</h4>
+                <h6>Date:{{news['date']}}</h6>
+                <p>{{news['summary']}}</p>
+                                
+
+               </div>
+               <div class="modal-footer">
+                <form method = "POST", action="">
+                          <input type = "text" name = "title" value = "{{news['news']}}" style="display: none">
+                          <input type = "text" name = "username" value = "{{news['user']}}" id = "user" style="display: none">
+                          <input type = "text" name = "uid" value = "{{news['uid']}}" id = "uid" style="display: none">
+                          <button class="btn-floating  waves-effect waves-light red" type= "submit" name="deleteBookmarks" value = "deleteBookmarks" action ="deleteBookmarks" style = "left: 0%">
+                            <i class="material-icons">cancel</i>
+                          </button>
+                        </form> 
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>
+   {%endfor%}
+ </div>
+ {% endfor %}
+</div>
+{% else %}
+<div class="jumbotron text-center" style="margin: 20px">
+    <h3>No bookmarks yet</h3>
+</div>
+{% endif %}
+ {% endblock %}
+}
+}
+}
