@@ -1,0 +1,16 @@
+This project is done in flask and is a news streaming app called 'the Khabar'. 
+Authors : Pulkit Gera
+		  Neel Trivedi
+Lets hope we finish it in time.
+WE ARE MAKING NEWS APP	
+
+Improvements suggested:
+1) Ajax calls to be implemented for likes and comments as well as auto completion for querries
+2) Nested comments
+3) Entire article to made available 
+4) Google sign in
+5) Forgot Password
+6) Code quality improvement
+7) Chat room to discuss news( different chat rooms to discuss different articles)
+8) pagination
+9) Deploy to a server
