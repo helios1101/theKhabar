@@ -4,7 +4,7 @@ README v1.0 / 02 May 2018
 
 ## Introduction
 
-A news streaming app where users can login and add comments and likes and admin login can add,delete articles and moderate comments.
+A news streaming app where users can login and add comments and likes and admin login can add,delete articles and moderate comments. The project is written in Flask and python
 
 ## Usage
 
@@ -12,30 +12,33 @@ Simply run python3 app.py and open local host
 
 ## Contributing
 
-Give instructions on how to participate in your project patches.
+Before you start, please check whether its an issue and if its not then create an issue and contribute into it.
 
-## Help
+People interested can first fork the project using the fork option and then clone the local repo. Once thats done you can simply follow the steps - 
+1. git remote add upstream "name of my repo"
+2. git checkout -b "name of your branch"
+And start working on any issue you want.
 
-Explain which communication channels are available to request help. Communication channels with a proven track record are mailing lists, IRC channels, and forums. Also be sure to tell your more experienced users how and where to submit bugs or feature requests, possibly turning them into project participants.
+Once you are sure that the change is complete and ready simply follow the instructions
+1. git add .
+2. git commit -am "<some suitable message>" 
+3. git push origin <branch name>
+
+If your changess are mergable we will be happy to merge.
+
 
 ## Installation
 
 ### Requirements
-
-List anything your project requires in order to work as expected.
-
-### Installation
-
-Describe how to install your program. Be precise and give examples. Don't assume your users know how to clone from my github repo. Keep in mind that some of your users may be completely unskilled in system administration or software development.
-
-### Configuration
-
-After having installed the software, the user may need to configure it. List configuration options and explain how and where to set them.
+Note that the project is in python3
+Run the project once and it will throw you errors as to what all files are required. Keep in mind for any python installation please do pip3 and not pip 
 
 ## Credits
 
-Sometimes also called Authors, this is the list of project contributors.
+Pulkit Gera and Neel Trivedi
 
 ## Contact
 
-People may want to reach out to you for various reasons, ranging from DCMA take down notices to questions about how to donate to your project. Provide contact information, such as an email address, and keep in mind that some countries may require certain information by law, such as a full postal address, website URL, and company name. 
+to contact anyone of us for further help, you could look us up on facebook or contact us on our email ids
+####pulkit.gera@research.iiit.ac.in
+####neel.trivedi@research.iiit.ac.in
