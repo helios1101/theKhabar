@@ -15,6 +15,8 @@ from models import *
 from flask_sqlalchemy import SQLAlchemy
 from random import shuffle
 from forms import *
+import warnings	
+
 
 loggedin=False
 ad_loggedin=False
@@ -115,6 +117,8 @@ def register_admin():
 
 @app.route('/login',methods=['GET','POST'])
 def login():
+	global un
+	global loggedin
 	if request.method=='POST':
 		usern1=request.form['username']
 		password_candidate=request.form['password']
@@ -124,9 +128,9 @@ def login():
 				data=cur.fetchone()
 				password=data['password']
 				if sha256_crypt.verify(password_candidate,password):
-					global un
+					
 					un=usern1
-					global loggedin
+					
 					loggedin=True
 					return redirect(url_for('user_home'))
 				else:
@@ -140,6 +144,7 @@ def login():
 @app.route('/login_admin',methods=['GET','POST'])
 def login_admin():
 	global ad_loggedin
+	global un
 	ad_loggedin=False
 	if request.method=='POST':
 		usern1=request.form['username']
@@ -150,9 +155,9 @@ def login_admin():
 				data=cur.fetchone()
 				password=data['password']
 				if sha256_crypt.verify(password_candidate,password):
-					global un
+					
 					un=usern1
-					global ad_loggedin
+					#global ad_loggedin
 					ad_loggedin=True
 					return redirect(url_for('admin_home'))
 				else:
@@ -503,6 +508,7 @@ def change():
 
 @app.route('/change_user',methods=['GET','POST'])
 def change_user():
+	global un
 	if request.method=='POST':
 		p=request.form['password']
 		ns=request.form['new_user']
@@ -512,7 +518,7 @@ def change_user():
 		password=data['password']
 		if sha256_crypt.verify(p,password):
 			cur.execute("UPDATE userInfo SET username=%s WHERE password=%s",[ns,password])
-			global un
+			
 			un=ns
 			mysql.connection.commit()
 			cur.close()
@@ -1169,11 +1175,13 @@ def search():
 
 @app.route('/search/<keywords>',methods = ['GET','POST'])
 def result(keywords):
+	global total
 	tables = ['General','Sports','Entertainment','Technology','Science']
 	totalSet = set()
 	total.clear()
 	totalSet.clear()
 	flag=0
+	
 	
 	tempcur=mysql.connection.cursor()
 	temp=tempcur.execute("""select * from Sports where keyword like %s """,[keywords+'%'])
@@ -1187,7 +1195,7 @@ def result(keywords):
 				pass
 		else:
 			totalSet.add(khabar['title'])
-			global total
+			
 			total.append(khabar)
 	
 	
@@ -1202,7 +1210,7 @@ def result(keywords):
 				pass
 		else:
 			totalSet.add(khabar['title'])
-			global total
+			#global total
 			total.append(khabar)
 	
 	
@@ -1217,7 +1225,7 @@ def result(keywords):
 				pass
 		else:
 			totalSet.add(khabar['title'])
-			global total
+			#global total
 			total.append(khabar)
 
 	
@@ -1232,7 +1240,7 @@ def result(keywords):
 				pass
 		else:
 			totalSet.add(khabar['title'])
-			global total
+			#global total
 			total.append(khabar)
 	
 	tempcur=mysql.connection.cursor()
@@ -1247,7 +1255,7 @@ def result(keywords):
 				pass
 		else:
 			totalSet.add(khabar['title'])
-			global total
+			#global total
 			total.append(khabar)
 
 	temp=tempcur.execute("""select * from Business where keyword like %s """,[keywords+'%'])
@@ -1261,7 +1269,7 @@ def result(keywords):
 				pass
 		else:
 			totalSet.add(khabar['title'])
-			global total
+			#global total
 			total.append(khabar)
 
 
@@ -1276,7 +1284,7 @@ def result(keywords):
 				pass
 		else:
 			totalSet.add(khabar['title'])
-			global total
+			#global total
 			total.append(khabar)
 	
 	if flag == 0:
@@ -1372,4 +1380,10 @@ def err(e):
 if __name__=='__main__':
 	app.secret_key=("secretkey")
 	app.debug=True
-	app.run()
+	try:
+		app.run()
+		warnings.filterwarnings("ignore")
+
+	except SyntaxWarning:
+		pass
+	
