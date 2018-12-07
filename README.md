@@ -21,7 +21,7 @@ And start working on any issue you want.
 
 Once you are sure that the change is complete and ready simply follow the instructions
 1. git add .
-2. git commit -am "<some suitable message>" 
+2. git commit -m "<some suitable message>" 
 3. git push origin <branch name>
 
 If your changess are mergable we will be happy to merge.
