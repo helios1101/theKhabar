@@ -40,5 +40,5 @@ Pulkit Gera and Neel Trivedi
 ## Contact
 
 to contact anyone of us for further help, you could look us up on facebook or contact us on our email ids
-####pulkit.gera@research.iiit.ac.in
-####neel.trivedi@research.iiit.ac.in
+#### pulkit.gera@research.iiit.ac.in
+#### neel.trivedi@research.iiit.ac.in
